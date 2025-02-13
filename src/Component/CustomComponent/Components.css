@@ -10,6 +10,7 @@
 
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
+    margin-top: 30px !important;
 }
 
 .actions-container {
@@ -101,7 +102,7 @@
 .column-visibility {
     position: absolute;
     top: 33px;
-    left: -250%;
+    left: -210%;
     transform: translateX(-50%);
     padding: 5px 10px 10px 5px;
     background-color: #fbfbfb;
@@ -128,22 +129,17 @@
 
 .custom-grid {
     background-color: #f3f3f3;
-    overflow: none;
+    /* overflow: none; */
     margin-top: 0px;
-}
-
-.custom-grid-header {
-    overflow-y: none;
 }
 
 .custom-grid-body {
     height: 300px;
-    /* background-color: red; */
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .inner-column-visibility {
-    height: auto;
+    max-height: 255px;
     text-align: left;
     padding: 5px;
 }
@@ -634,6 +630,7 @@ tr {
     height: 10px !important;
     width: 10px !important;
 }
+
 
 /* Responsive code */
 @media (max-width: 768px) {

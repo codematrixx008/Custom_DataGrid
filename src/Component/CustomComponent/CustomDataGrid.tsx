@@ -22,6 +22,7 @@ import { FaCalendar, FaFileCsv } from "react-icons/fa";
 
 // Custom Styles
 import '../CustomComponent/Components.css';
+import '../CustomComponent/Style.css';
 
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -910,7 +911,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                 )}
                 {showColumnVisiblePopUp &&
                   <div ref={popupColumnRef} className="column-visibility" style={{ padding: "10px 0px" }}>
-                    <div className='inner-column-visibility' style={{ height: "255px", overflowY: "scroll" }}>
+                    <div className='inner-column-visibility' style={{ maxheight: "255px", overflowY: "scroll" }}>
 
                       {listViewColumns.map((col: any, index: number) => (
                         <div key={index} className="checkbox-container" style={{ fontSize: 13 }}>
@@ -931,11 +932,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           </div>
         </div>
         <div className='form-group' style={{ background: "white", border: "1px solid #bab9b9", overflow: 'hidden' }} ref={filterDropdownRef}>
-          <div style={{ overflowY: 'auto', position: 'relative' }}>
+          <div classname="clsmainheaderrow" style={{ overflowY: 'auto', position: 'relative' }}>
             <table cellPadding="5" style={{ borderCollapse: 'collapse' }} className="custom-grid">
               <thead style={{ top: 0, zIndex: 10, background: 'white' }} className="custom-grid-header">
                 <tr>
-                  <th style={{ width: 25, whiteSpace: 'nowrap', position: "sticky", top: "-2px", zIndex: 111 }} className="sticky-column">
+                  <th
+                    style={{ width: 25, whiteSpace: 'nowrap', position: "sticky", top: "-2px", zIndex: 111 }}
+                    className="sticky-column">
                     <input
                       type="checkbox"
                       checked={isSelectAllChecked}
@@ -946,7 +949,10 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                     .filter((col: any) => col.isVisible)
                     .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
                     .map((col: any) => (
-                      <th className='th-tab' style={{ whiteSpace: 'nowrap', position: "sticky", top: "-2px" }} key={col.ColumnHeader}>
+                      <th
+                        className='th-tab'
+                        style={{ textAlign: "left", whiteSpace: 'nowrap', position: "sticky", top: "-2px" }}
+                        key={col.ColumnHeader}>
                         {col.ColumnHeader}
                         <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
                           <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> ⇅ </button>
@@ -998,8 +1004,9 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       .filter((col: any) => col.isVisible)
                       .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
                       .map((col: any) => (
-                        <td key={col.ColumnHeader}
-
+                        <td
+                          key={col.ColumnHeader}
+                          style={{ textAlign: col.Alignment }}
                           onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                         >
                           {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
