@@ -630,6 +630,11 @@ tr {
     border: 1px solid #ccc;
 }
 
+.react-datepicker__close-icon::after {
+    height: 10px !important;
+    width: 10px !important;
+}
+
 /* Responsive code */
 @media (max-width: 768px) {
     .actions-container {
