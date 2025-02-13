@@ -87,7 +87,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   // const [sortedData, setSortedData] = useState(data);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [visibleColumns, setVisibleColumns] = useState(listViewColumns);
+
+
+  // **Date Filters**
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+
   const isAnyRowSelected = selectedRows.length > 0;
 
   // **Filters & Sorting**
@@ -496,7 +502,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           <>
             {filters[column]?.condition === 'between' ? (
               <>
-                <DatePicker
+                {/* <DatePicker
                   className="DatePicker-custom"
                   selected={filters[column]?.value?.startDate || null}
                   onChange={(date: Date | null) => {
@@ -529,23 +535,62 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                   dateFormat={dataType === 'datetime' ? 'Pp' : 'P'}
                   placeholderText="End Date"
                   isClearable
+                /> */}
+
+                <input
+                  type="date"
+                  className="DatePicker-custom"
+                  value={filters[column]?.value?.startDate ? filters[column]?.value?.startDate.toISOString().split("T")[0] : ""}
+                  onChange={(e) => {
+                    const newDate = e.target.value ? new Date(e.target.value) : null;
+                    setFilters((prev) => ({
+                      ...prev,
+                      [column]: {
+                        ...prev[column],
+                        value: { ...prev[column]?.value, startDate: newDate }
+                      }
+                    }));
+                  }}
+                  placeholder="Start Date"
                 />
+
+                <input
+                  type="date"
+                  className="DatePicker-custom"
+                  value={filters[column]?.value?.endDate ? filters[column]?.value?.endDate.toISOString().split("T")[0] : ""}
+                  onChange={(e) => {
+                    const newDate = e.target.value ? new Date(e.target.value) : null;
+                    setFilters((prev) => ({
+                      ...prev,
+                      [column]: {
+                        ...prev[column],
+                        value: { ...prev[column]?.value, endDate: newDate }
+                      }
+                    }));
+                  }}
+                  placeholder="End Date"
+                />
+
               </>
             ) : (
-              <DatePicker
+
+              <input
+                type="date"
+                id="date"
+                name="date"
                 className="DatePicker-custom"
-                selected={filters[column]?.value || null}
-                onChange={(date: Date | null) => {
+                value={filters[column]?.value ? filters[column]?.value.toISOString().split("T")[0] : ""}
+                onChange={(e: any) => {
+                  const newDate = e.target.value ? new Date(e.target.value) : null;
                   setFilters((prev) => ({
                     ...prev,
-                    [column]: { ...prev[column], value: date }
+                    [column]: { ...prev[column], value: newDate }
                   }));
                 }}
-                showTimeSelect={dataType === 'datetime'}
-                dateFormat={dataType === 'datetime' ? 'Pp' : 'P'}
-                placeholderText="Select Date"
-                isClearable
+                placeholder="Select Date"
               />
+
+
             )}
           </>
         );
@@ -568,6 +613,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
         return null;
     }
   };
+
 
   const handleFilterConditionChange = (column: string, condition: string) => {
     setFilters((prevFilters) => ({
@@ -1005,16 +1051,18 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
                       .map((col: any) => (
                         <td
-<<<<<<< Updated upstream
+
                           key={col.ColumnHeader}
                           style={{ textAlign: col.Alignment }}
-=======
                         key={col.ColumnHeader}
                         style={{ textAlign: col.Alignment }}
->>>>>>> Stashed changes
+
                           onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                         >
-                          {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
+{console.log("chckdata", row[col.ColumnHeader] )}
+
+                          {editCell?.rowId === row.id && col.DataType == "string" &&
+                            editCell?.ColumnHeader === col.ColumnHeader ? (
                             <input
                               type="text"
                               defaultValue={row[col.ColumnHeader]}
@@ -1026,9 +1074,24 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                                 }
                               }}
                             />
-                          ) : (
-                            <>  {row[col.ColumnHeader]}  </>
-                          )}
+                          ) : editCell?.rowId === row.id && col.DataType == "date" &&
+                            editCell?.ColumnHeader === col.ColumnHeader ? (
+                              <input
+                              type="date"
+                              defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]} 
+                              className="editable-input"
+                              onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                              onKeyDown={(e: any) => {
+                                if (e.key === "Enter") {
+                                  handleEditableInput(col.ColumnHeader, e.target.value);
+                                }
+                              }}
+                            />
+                          )
+                            :
+                            (
+                              <>  {row[col.ColumnHeader]}  </>
+                            )}
 
                         </td>
                       ))}

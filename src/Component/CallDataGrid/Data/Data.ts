@@ -51,7 +51,7 @@ export const tableData = [
     {
         id: 1,
         EmployeeName: "John Cena",
-        BirthDate: "1992-11-08",
+        BirthDate: "2024-11-15",
         RelationshipStatus: "Single",
         AnnualIncome: 60000,
         IdentificationNumber: "EMP001",
