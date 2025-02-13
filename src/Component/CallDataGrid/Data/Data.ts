@@ -3,13 +3,13 @@ export const buttonSetting = {
     ButtonAction: ['Add', 'Edit', 'Delete', 'CSV', 'XLSX', 'PDF','ShowHideColumns'],
     IsButtonVisible: 
     {
-        Add: false,
-        Edit: false,
-        Delete: false,
+        Add: true,
+        Edit: true,
+        Delete: true,
         CSV: true,
         XLSX: true,
         PDF: true,
-        ShowHideColumns:false
+        ShowHideColumns:true
     },
     IsButtonEnabled:
     {
@@ -19,7 +19,7 @@ export const buttonSetting = {
         CSV: true,
         XLSX: true,
         PDF: true,
-        ShowHideColumns:false
+        ShowHideColumns:true
     }
 };
 export const listViewColumns = [
