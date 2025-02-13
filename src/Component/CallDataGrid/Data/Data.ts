@@ -1,7 +1,8 @@
 export const title = "Employee Record";
+
 export const buttonSetting = {
-    ButtonAction: ['Add', 'Edit', 'Delete', 'CSV', 'XLSX', 'PDF','ShowHideColumns'],
-    IsButtonVisible: 
+    ButtonAction: ['Add', 'Edit', 'Delete', 'CSV', 'XLSX', 'PDF', 'ShowHideColumns'],
+    IsButtonVisible:
     {
         Add: true,
         Edit: true,
@@ -9,7 +10,7 @@ export const buttonSetting = {
         CSV: true,
         XLSX: true,
         PDF: true,
-        ShowHideColumns:true
+        ShowHideColumns: true
     },
     IsButtonEnabled:
     {
@@ -19,26 +20,33 @@ export const buttonSetting = {
         CSV: true,
         XLSX: true,
         PDF: true,
-        ShowHideColumns:true
+        ShowHideColumns: true
     }
 };
+
 export const listViewColumns = [
-    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 1 },
-    { ColumnHeader: "BirthDate", DataType: "date", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 6 },
-    { ColumnHeader: "RelationshipStatus", DataType: "string", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 3 },
-    { ColumnHeader: "AnnualIncome", DataType: "number", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 4 },
-    { ColumnHeader: "IdentificationNumber", DataType: "string", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: true, Sorting: false, Filtering: true, ColumnOrder: 5 },
-    { ColumnHeader: "StartDate", DataType: "date", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 2 },
-    { ColumnHeader: "FullTimeEmployment", DataType: "boolean", Tooltip: false, Width: 200, isVisible: false, isEditable: false, isFreeze: false, Sorting: false, Filtering: false, ColumnOrder: 7 },
-    { ColumnHeader: "ProfessionalExperience", DataType: "number", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 8 },
-    { ColumnHeader: "WorkDepartment", DataType: "string", Tooltip: false, Width: 200, isVisible: false, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 9 },
-    { ColumnHeader: "RecentPromotionDate", DataType: "date", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 10 },
-    { ColumnHeader: "ManagementPosition", DataType: "boolean", Tooltip: false, Width: 200, isVisible: false, isEditable: false, isFreeze: false, Sorting: false, Filtering: false, ColumnOrder: 11 },
-    { ColumnHeader: "JobPerformanceRating", DataType: "number", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 12 },
-    { ColumnHeader: "ContactEmail", DataType: "string", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 13 },
-    { ColumnHeader: "LastAccessDate", DataType: "date", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 14 },
-    { ColumnHeader: "ActiveEmployeeStatus", DataType: "boolean", Tooltip: false, Width: 200, isVisible: true, isEditable: false, isFreeze: false, Sorting: false, Filtering: false, ColumnOrder: 15 }
+    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 1, Alignment: "left" },
+    { ColumnHeader: "BirthDate", DataType: "date", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 2, Alignment: "left" },
+    { ColumnHeader: "RelationshipStatus", DataType: "string", Tooltip: false, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 3, Alignment: "left" },
+    { ColumnHeader: "AnnualIncome", DataType: "number", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 4, Alignment: "center" },
+    { ColumnHeader: "IdentificationNumber", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: true, Sorting: false, Filtering: true, ColumnOrder: 5, Alignment: "center" },
+    { ColumnHeader: "StartDate", DataType: "date", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 6, Alignment: "center" },
+    { ColumnHeader: "FullTimeEmployment", DataType: "boolean", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 7, Alignment: "center" },
+    { ColumnHeader: "ProfessionalExperience", DataType: "number", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 8, Alignment: "center" },
+    { ColumnHeader: "WorkDepartment", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 9, Alignment: "left" },
+    { ColumnHeader: "RecentPromotionDate", DataType: "date", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 10, Alignment: "center" },
+    { ColumnHeader: "ManagementPosition", DataType: "boolean", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 11, Alignment: "center" },
+    { ColumnHeader: "JobPerformanceRating", DataType: "number", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 12, Alignment: "center" },
+    { ColumnHeader: "ContactEmail", DataType: "string", Tooltip: false, Width: 220, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 13, Alignment: "left" },
+    { ColumnHeader: "PhoneNumber", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 14, Alignment: "left" },
+    { ColumnHeader: "EmergencyContact", DataType: "string", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 15, Alignment: "left" },
+    { ColumnHeader: "LastAccessDate", DataType: "date", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 16, Alignment: "center" },
+    { ColumnHeader: "ActiveEmployeeStatus", DataType: "boolean", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 17, Alignment: "center" },
+    { ColumnHeader: "BonusAmount", DataType: "number", Tooltip: false, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 18, Alignment: "center" },
+    { ColumnHeader: "TaxBracket", DataType: "string", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 19, Alignment: "center" },
+    { ColumnHeader: "RemoteWorkEligible", DataType: "boolean", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 20, Alignment: "center" },
 ];
+
 export const tableData = [
     {
         id: 1,
@@ -54,9 +62,14 @@ export const tableData = [
         RecentPromotionDate: "2023-02-10",
         ManagementPosition: false,
         JobPerformanceRating: 3.8,
-        ContactEmail: "alice.johnson@example.com",
+        ContactEmail: "john.cena@example.com",
+        PhoneNumber: "123-456-7890",
+        EmergencyContact: "Jane Doe - 987-654-3210",
         LastAccessDate: "2024-09-26",
-        ActiveEmployeeStatus: true
+        ActiveEmployeeStatus: true,
+        BonusAmount: 5000,
+        TaxBracket: "20%",
+        RemoteWorkEligible: true
     },
     ...Array.from({ length: 199 }, (_, i) => ({
         id: i + 2,
@@ -73,7 +86,12 @@ export const tableData = [
         ManagementPosition: i % 5 === 0,
         JobPerformanceRating: (Math.random() * 5).toFixed(1),
         ContactEmail: `employee${i + 2}@example.com`,
+        PhoneNumber: `555-123-${(i % 900) + 100}`,
+        EmergencyContact: `Person ${(i % 50) + 1} - 555-789-${(i % 900) + 100}`,
         LastAccessDate: `2024-09-${(i % 28) + 1}`,
-        ActiveEmployeeStatus: i % 2 === 0
+        ActiveEmployeeStatus: i % 2 === 0,
+        BonusAmount: Math.floor(Math.random() * 5000) + 1000,
+        TaxBracket: ["10%", "15%", "20%", "25%"][i % 4],
+        RemoteWorkEligible: i % 3 === 0
     }))
 ];
