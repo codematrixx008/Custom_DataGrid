@@ -1005,8 +1005,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
                       .map((col: any) => (
                         <td
+<<<<<<< Updated upstream
                           key={col.ColumnHeader}
                           style={{ textAlign: col.Alignment }}
+=======
+                        key={col.ColumnHeader}
+                        style={{ textAlign: col.Alignment }}
+>>>>>>> Stashed changes
                           onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                         >
                           {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
