@@ -128,6 +128,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   // **Refs**
   const filterDropdownRef = useRef<HTMLDivElement>(null);
   const popupColumnRef = useRef<HTMLDivElement>(null);
+  const [tableData, setTableData] = useState<any[]>([]);
+
 
 
   useEffect(() => {
@@ -187,8 +189,20 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   };
 
   const handleAddSubmit = () => {
-    alert("you click on add button ");
-  }
+    // Create a new row with input values
+    const newRow = { id: Date.now(), ...inputValues };
+
+    // Update the table data
+    setTableData((prevData) => [...prevData, newRow]);
+    console.log("Newror Data -------> ", newRow);
+
+    // // Reset input fields
+    // setInputValues({});
+
+    // Close the popup
+    handleActionAddButtonclose();
+  };
+
 
   const handleEditSubmit = () => {
     if (showActionPopup.Edit) {
@@ -502,40 +516,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           <>
             {filters[column]?.condition === 'between' ? (
               <>
-                {/* <DatePicker
-                  className="DatePicker-custom"
-                  selected={filters[column]?.value?.startDate || null}
-                  onChange={(date: Date | null) => {
-                    setFilters((prev) => ({
-                      ...prev,
-                      [column]: {
-                        ...prev[column],
-                        value: { ...prev[column]?.value, startDate: date }
-                      }
-                    }));
-                  }}
-                  showTimeSelect={dataType === 'datetime'}
-                  dateFormat={dataType === 'datetime' ? 'Pp' : 'P'}
-                  placeholderText="Start Date"
-                  isClearable
-                />
-                <DatePicker
-                  className="DatePicker-custom"
-                  selected={filters[column]?.value?.endDate || null}
-                  onChange={(date: Date | null) => {
-                    setFilters((prev) => ({
-                      ...prev,
-                      [column]: {
-                        ...prev[column],
-                        value: { ...prev[column]?.value, endDate: date }
-                      }
-                    }));
-                  }}
-                  showTimeSelect={dataType === 'datetime'}
-                  dateFormat={dataType === 'datetime' ? 'Pp' : 'P'}
-                  placeholderText="End Date"
-                  isClearable
-                /> */}
 
                 <input
                   type="date"
@@ -997,9 +977,12 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                     .map((col: any) => (
                       <th
                         className='th-tab'
-                        style={{ textAlign: "left", whiteSpace: 'nowrap', position: "sticky", top: "-2px" }}
-                        key={col.ColumnHeader}>
+                        style={{ textAlign: "left", minWidth: `${col.Width}px`, whiteSpace: 'nowrap', position: "sticky", top: "-2px" }}
+                        key={col.ColumnHeader}
+                        title={col.ColumnHeader}
+                      >
                         {col.ColumnHeader}
+                        {/* {console.log("column width ", col, col.Width)} */}
                         <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
                           <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> ⇅ </button>
                           <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}>&#8942; </button>
@@ -1037,8 +1020,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                 </tr>
               </thead>
               <tbody className="custom-grid-body">
-                {paginatedData.map((row: any, index: number) => (
-                  <tr key={row.id} className={index % 2 === 0 ? 'stripedRow' : 'table-row'}>
+                {paginatedData.map((row, index) => (
+                  <tr key={row.id} className={index % 2 === 0 ? "stripedRow" : "table-row"}>
                     <td className="sticky-column">
                       <input
                         type="checkbox"
@@ -1051,53 +1034,49 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
                       .map((col: any) => (
                         <td
-
                           key={col.ColumnHeader}
-                          style={{ textAlign: col.Alignment }}
-                        key={col.ColumnHeader}
-                        style={{ textAlign: col.Alignment }}
-
+                          style={{ textAlign: col.Alignment, minWidth: `${col.Width}px`, borderRight: "1px solid #ccc" }}
                           onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                         >
-{console.log("chckdata", row[col.ColumnHeader] )}
-
-                          {editCell?.rowId === row.id && col.DataType == "string" &&
-                            editCell?.ColumnHeader === col.ColumnHeader ? (
-                            <input
-                              type="text"
-                              defaultValue={row[col.ColumnHeader]}
-                              className="editable-input"
-                              onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                              onKeyDown={(e: any) => {
-                                if (e.key == "Enter") {
-                                  handleEditableInput(col.ColumnHeader, e.target.value);
-                                }
-                              }}
-                            />
-                          ) : editCell?.rowId === row.id && col.DataType == "date" &&
-                            editCell?.ColumnHeader === col.ColumnHeader ? (
+                          {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
+                            col.DataType === "string" ? (
                               <input
-                              type="date"
-                              defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]} 
-                              className="editable-input"
-                              onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                              onKeyDown={(e: any) => {
-                                if (e.key === "Enter") {
-                                  handleEditableInput(col.ColumnHeader, e.target.value);
-                                }
-                              }}
-                            />
-                          )
-                            :
-                            (
-                              <>  {row[col.ColumnHeader]}  </>
-                            )}
-
+                                type="text"
+                                defaultValue={row[col.ColumnHeader]}
+                                className="editable-input"
+                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                              />
+                            ) : col.DataType === "date" ? (
+                              <input
+                                type="date"
+                                defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]}
+                                className="editable-input"
+                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                              />
+                            ) : col.DataType === "boolean" ? (
+                              <select
+                                className="editable-input"
+                                defaultValue={row[col.ColumnHeader] ? "true" : "false"}
+                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value === "true")}
+                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value === "true")}
+                              >
+                                <option value="true">True</option>
+                                <option value="false">False</option>
+                              </select>
+                            ) : null
+                          ) : (
+                            <>
+                              {col.DataType === "boolean" ? (row[col.ColumnHeader] ? "True" : "False") : row[col.ColumnHeader]}
+                            </>
+                          )}
                         </td>
                       ))}
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
           <div className="pagination-container">

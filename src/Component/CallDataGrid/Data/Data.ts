@@ -25,13 +25,13 @@ export const buttonSetting = {
 };
 
 export const listViewColumns = [
-    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 1, Alignment: "left" },
-    { ColumnHeader: "BirthDate", DataType: "date", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 2, Alignment: "left" },
-    { ColumnHeader: "RelationshipStatus", DataType: "string", Tooltip: false, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 3, Alignment: "left" },
+    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 1, Alignment: "left" },
+    { ColumnHeader: "BirthDate", DataType: "date", Tooltip: false, Width: 120, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 2, Alignment: "left" },
+    { ColumnHeader: "RelationshipStatus", DataType: "string", Tooltip: false, Width: 170, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 3, Alignment: "left" },
     { ColumnHeader: "AnnualIncome", DataType: "number", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 4, Alignment: "center" },
     { ColumnHeader: "IdentificationNumber", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: true, Sorting: false, Filtering: true, ColumnOrder: 5, Alignment: "center" },
     { ColumnHeader: "StartDate", DataType: "date", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 6, Alignment: "center" },
-    { ColumnHeader: "FullTimeEmployment", DataType: "boolean", Tooltip: false, Width: 150, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 7, Alignment: "center" },
+    { ColumnHeader: "FullTimeEmployment", DataType: "boolean", Tooltip: false, Width: 190, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 7, Alignment: "center" },
     { ColumnHeader: "ProfessionalExperience", DataType: "number", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 8, Alignment: "center" },
     { ColumnHeader: "WorkDepartment", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 9, Alignment: "left" },
     { ColumnHeader: "RecentPromotionDate", DataType: "date", Tooltip: false, Width: 180, isVisible: true, isEditable: false, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 10, Alignment: "center" },
