@@ -10,7 +10,7 @@
 
 ::-webkit-scrollbar-track {
     background: #f1f1f1;
-    margin-top: 30px !important;
+    margin-top: 49px !important;
 }
 
 .actions-container {
@@ -109,7 +109,7 @@
     color: #313131;
     border-radius: 3px;
     white-space: nowrap;
-    z-index: 11;
+    z-index: 150;
     box-shadow: 0px 1px 6px #7b7b7b;
 }
 
@@ -633,7 +633,18 @@ tr {
     width: 10px !important;
 }
 
-
+.popup-ActionLabel {
+    width: 40%;
+    color: rgb(61, 59, 59);
+  }
+  table {
+    border-collapse: collapse;
+  }
+  
+  table, th, td {
+    border: 1px solid #cfcfcf; /* Change the color of all table borders to red */
+  }
+  
 /* Responsive code */
 @media (max-width: 768px) {
     .actions-container {

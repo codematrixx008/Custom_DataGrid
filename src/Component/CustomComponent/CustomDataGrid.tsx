@@ -23,6 +23,7 @@ import { FaCalendar, FaFileCsv } from "react-icons/fa";
 // Custom Styles
 import '../CustomComponent/Components.css';
 import '../CustomComponent/Style.css';
+import { TbBackground } from 'react-icons/tb';
 
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -73,12 +74,16 @@ const styles: { [key: string]: React.CSSProperties } = {
 
 const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) => {
 
+  const [tableData, setTableData] = useState<any[]>([]);
+  // **Input Values**
+  const [inputValues, setInputValues] = useState<any>({});
   // **Search & Pagination**
   const [searchTerm, setSearchTerm] = useState('');
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
   const [sortedData, setSortedData] = useState(data);
+  // const sortedData = [...tableData].sort((a, b) => a.id - b.id);
   const [selectedsortedData, setSelectedSortedData] = useState(data);
   const totalPages = Math.ceil(sortedData.length / pageSize);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -116,11 +121,12 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   });
   const [editCell, setEditCell] = useState<{ rowId: number; ColumnHeader: string } | null>(null);
 
-  // **Input Values**
-  const [inputValues, setInputValues] = useState<{ [key: string]: any }>({});
+
 
   // **Pagination Data**
+
   const paginatedData = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
 
   // **Selection Helpers**
   const isSelectAllChecked = selectedRows.length === paginatedData.length && paginatedData.length > 0;
@@ -128,9 +134,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   // **Refs**
   const filterDropdownRef = useRef<HTMLDivElement>(null);
   const popupColumnRef = useRef<HTMLDivElement>(null);
-  const [tableData, setTableData] = useState<any[]>([]);
-
-
 
   useEffect(() => {
     if (columnFilterVisible) {
@@ -189,20 +192,12 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   };
 
   const handleAddSubmit = () => {
-    // Create a new row with input values
     const newRow = { id: Date.now(), ...inputValues };
-
-    // Update the table data
-    setTableData((prevData) => [...prevData, newRow]);
-    console.log("Newror Data -------> ", newRow);
-
-    // // Reset input fields
-    // setInputValues({});
-
-    // Close the popup
+    setSortedData((prevData) => [...prevData, newRow]);
+    console.log("New Data Added:", newRow);
+    setInputValues({});
     handleActionAddButtonclose();
   };
-
 
   const handleEditSubmit = () => {
     if (showActionPopup.Edit) {
@@ -409,7 +404,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
             <option value="doesnotcontain">Does not contain</option>
             <option value="startwith">Start with</option>
             <option value="endwith">End with</option>
-            <option value="is">Is</option>
+            {/* <option value="is">Is</option> */}
           </>
         );
 
@@ -464,6 +459,35 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   const renderFilterInput = (dataType: string, column: string) => {
     switch (dataType) {
       case 'string':
+        return (
+          <>
+            {filters[column]?.condition === 'isempty' ? (
+              // When checking for an empty string, you might simply disable input or show a message
+              <input
+                type="text"
+                className="search-input2"
+                value={''}
+                disabled
+                placeholder="No value"
+              />
+            ) : filters[column]?.condition === 'doesnotcontain' ? (
+              <input
+                type="text"
+                className="search-input2"
+                onChange={(e) => handleFilterInputChange(column, e.target.value)}
+                placeholder="Does not contain"
+              />
+            ) : (
+              <input
+                type="text"
+                className="search-input2"
+                onChange={(e) => handleFilterInputChange(column, e.target.value)}
+                placeholder="Search"
+              />
+            )}
+          </>
+        );
+
       case 'number':
         return (
           <>
@@ -472,29 +496,29 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                 <input
                   type="number"
                   className="search-input2"
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setFilters((prev) => ({
                       ...prev,
                       [column]: {
                         ...prev[column],
-                        value: { ...prev[column]?.value, min: e.target.value }
-                      }
-                    }));
-                  }}
+                        value: { ...prev[column]?.value, min: e.target.value },
+                      },
+                    }))
+                  }
                   placeholder="Min value"
                 />
                 <input
                   type="number"
                   className="search-input2"
-                  onChange={(e) => {
+                  onChange={(e) =>
                     setFilters((prev) => ({
                       ...prev,
                       [column]: {
                         ...prev[column],
-                        value: { ...prev[column]?.value, max: e.target.value }
-                      }
-                    }));
-                  }}
+                        value: { ...prev[column]?.value, max: e.target.value },
+                      },
+                    }))
+                  }
                   placeholder="Max value"
                 />
               </>
@@ -508,7 +532,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
             )}
           </>
         );
-
 
       case 'date':
       case 'datetime':
@@ -579,13 +602,18 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
       case 'boolean':
         const distinctValues = getDistinctBooleanValues(column);
         return (
-          <select className="search-input2" onChange={(e) => handleFilterInputChange(column, e.target.value)}>
+          <select
+            className="search-input2"
+            onChange={(e: any) => handleFilterInputChange(column, e.target.value)}
+          >
             <option value="">Select</option>
-            {distinctValues.map((val: any, idx: number) => (
-              <option key={idx} value={val}>
-                {val ? 'Yes' : 'No'}
-              </option>
-            ))}
+            {distinctValues.map((val: any, idx: number) => {
+              return (
+                <option key={idx} value={val}>
+                  {val ? 'True' : 'False'}
+                </option>
+              );
+            })}
           </select>
         );
 
@@ -593,7 +621,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
         return null;
     }
   };
-
 
   const handleFilterConditionChange = (column: string, condition: string) => {
     setFilters((prevFilters) => ({
@@ -606,6 +633,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   };
 
   const handleFilterInputChange = (column: string, value: any) => {
+    console.log("Column and Valur ", column, value);
+
     setFilters((prevFilters) => ({
       ...prevFilters,
       [column]: {
@@ -621,37 +650,52 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     Object.keys(filters).forEach((column) => {
       const { condition, value } = filters[column];
 
-      if (value) {
+      if (value !== undefined && value !== null) {
         filteredData = filteredData.filter((row: any) => {
           const cellValue = row[column];
 
-          if (!cellValue) return condition === 'isempty'; // Handle empty check early
+          if (condition === 'isempty') return cellValue === null || cellValue === undefined || cellValue === '';
+          if (condition === 'isnotempty') return !(cellValue === null || cellValue === undefined || cellValue === '');
 
-          if (!isNaN(cellValue)) {
-            // Number filtering
+          if (typeof cellValue === 'number') {
             const numValue = Number(cellValue);
-
             switch (condition) {
-              case 'greaterthan':
-                return numValue > Number(value);
-              case 'greaterthanequal':
-                return numValue >= Number(value);
-              case 'lessthan':
-                return numValue < Number(value);
-              case 'lessthanequal':
-                return numValue <= Number(value);
+              case 'equal': return numValue === Number(value);
+              case 'notequal': return numValue !== Number(value);
+              case 'greaterthan': return numValue > Number(value);
+              case 'greaterthanequal': return numValue >= Number(value);
+              case 'lessthan': return numValue < Number(value);
+              case 'lessthanequal': return numValue <= Number(value);
               case 'between':
-                return (
-                  Number(value.min) <= numValue &&
-                  numValue <= Number(value.max)
-                );
+                return Number(value.min) <= numValue && numValue <= Number(value.max);
               default:
                 return true;
             }
-          } else {
-            // Date filtering
+          }
+          else if (typeof cellValue === 'string') {
+            const strValue = String(cellValue); // Ensure it's a string
+            switch (condition) {
+              case 'contain': return strValue.includes(value);
+              case 'doesnotcontain': return !strValue.includes(value);
+              case 'startwith': return strValue.startsWith(value);
+              case 'endwith': return strValue.endsWith(value);
+              case 'is': return strValue === value;
+              default: return true;
+            }
+          }
+          else if (typeof cellValue === 'boolean') {
+            const boolValue = value === 'true' || value === true; // Convert value to boolean
+            switch (condition) {
+              case 'is':
+                return cellValue === boolValue;
+              case 'isnot':
+                return cellValue !== boolValue;
+              default:
+                return true;
+            }
+          }
+          else if (cellValue instanceof Date || !isNaN(Date.parse(cellValue))) {
             const dateValue = new Date(cellValue);
-
             switch (condition) {
               case 'isafter':
                 return dateValue > new Date(value);
@@ -670,13 +714,16 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                 return true;
             }
           }
+
+          return true;
         });
       }
     });
 
     setSortedData(filteredData);
-    setCurrentPage(1); // Reset pagination
+    setCurrentPage(1);
   };
+
 
   const handleclearfilter = () => {
     setFilters({
@@ -736,92 +783,197 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     </div>
   );
 
+  const frozenOffsets: { [key: string]: number } = {};
+  let offset = 30;
+  visibleColumns
+    .filter((col: any) => col.isVisible && col.isFreeze)
+    .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
+    .forEach((col: any) => {
+      frozenOffsets[col.ColumnHeader] = offset;
+      offset += 5 + col.Width;
+    });
+
   return (
     <div className="card" style={{ background: "#fcfefe" }}>
 
       {/* ///////////////////////////////////////////////////// */}
 
       {showActionPopup.Add && (
-        <div style={styles.overlay}
+        <div
+          style={styles.overlay}
           onClick={(e: any) => {
             if (e.target === e.currentTarget) {
               handleActionAddButtonclose();
             }
-          }}>
-          <div style={styles.popup} onClick={(e) => e.stopPropagation()} >
-
+          }}
+        >
+          <div style={styles.popup} onClick={(e) => e.stopPropagation()}>
             <div className="column-inputs-container" style={{ marginTop: '2px' }}>
-              <span className='popup-ActionTitle'>Add New :</span>
-              <hr></hr>
-              <div className='popup-mainconatiner' >
+              <span className="popup-ActionTitle">Add New :</span>
+              <hr />
+              <div className="popup-mainconatiner">
                 {listViewColumns.map((col: any, index: number) => (
-                  <div key={index} className='popup-inner-container'>
-                    <label htmlFor={`input-${col.ColumnHeader}`} className='popup-ActionLabel'>
+                  <div key={index} className="popup-inner-container">
+                    <label
+                      htmlFor={`input-${col.ColumnHeader}`}
+                      className="popup-ActionLabel"
+                    >
                       {col.ColumnHeader}
                     </label>
-                    <input
-                      id={`input-${col.ColumnHeader}`}
-                      type="text"
-                      value={inputValues[col.ColumnHeader] || ''}
-                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                      placeholder={`${col.ColumnHeader}`}
-                      className='popup-ActionInput'
-                    />
+
+                    {/* Render input based on col.DataType */}
+                    {col.DataType === "boolean" ? (
+                      <select
+                        id={`input-${col.ColumnHeader}`}
+                        value={String(inputValues[col.ColumnHeader] || "")}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                      >
+                        <option value="">Select</option>
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    ) : col.DataType === "date" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="date"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : col.DataType === "string" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : col.DataType === "number" ? (
+                      // If you prefer <input type="number" />, just change the type here.
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : (
+                      // Default fallback if DataType doesn't match above cases
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
+
               <div style={{ float: 'right' }}>
-                <button onClick={handleActionAddButtonclose} className='popup-ActionButton'>
+                <button onClick={handleActionAddButtonclose} className="popup-ActionButton">
                   Close
                 </button>
-                <button onClick={handleAddSubmit} style={{ marginLeft: 10 }} className='popup-ActionButton'>
+                <button
+                  onClick={handleAddSubmit}
+                  style={{ marginLeft: 10 }}
+                  className="popup-ActionButton"
+                >
                   Submit
                 </button>
-
               </div>
             </div>
           </div>
         </div>
       )}
+
 
       {/* ///////////////////////////////////////////////////// */}
 
       {showActionPopup.Edit && (
-        <div style={styles.overlay} onClick={(e: any) => {
-          if (e.target === e.currentTarget) {
-            handleActionEditButtonclose();
-          }
-        }}>
-          <div style={styles.popup} onClick={(e: any) => e.stopPropagation()} >
-
+        <div
+          style={styles.overlay}
+          onClick={(e: any) => {
+            if (e.target === e.currentTarget) {
+              handleActionEditButtonclose();
+            }
+          }}
+        >
+          <div style={styles.popup} onClick={(e: any) => e.stopPropagation()}>
             <div className="column-inputs-container" style={{ marginTop: '2px' }}>
-              <span className='popup-ActionTitle'>Edit Record:</span>
+              <span className="popup-ActionTitle">Edit Record:</span>
               <hr />
-              <div className='popup-mainconatiner' >
+              <div className="popup-mainconatiner">
                 {listViewColumns.map((col: any, index: number) => (
-                  <div key={index} className='popup-inner-container'>
-                    <label htmlFor={`input-${col.ColumnHeader}`} className='popup-ActionLabel'>
+                  <div key={index} className="popup-inner-container">
+                    <label
+                      htmlFor={`input-${col.ColumnHeader}`}
+                      className="popup-ActionLabel"
+                    >
                       {col.ColumnHeader}
                     </label>
-                    <input
-                      id={`input-${col.ColumnHeader}`}
-                      type="text"
-                      value={inputValues[col.ColumnHeader] || ''}
-                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                      placeholder={` ${col.ColumnHeader}`}
-                      className='popup-ActionInput'
-                    />
+
+                    {/* Render input based on col.DataType */}
+                    {col.DataType === "boolean" ? (
+                      <select
+                        id={`input-${col.ColumnHeader}`}
+                        value={String(inputValues[col.ColumnHeader] || "")}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                      >
+                        <option value="">Select</option>
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                      </select>
+                    ) : col.DataType === "date" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="date"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : col.DataType === "string" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : (
+                      // Fallback for any unexpected DataType
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
-              <div style={{ float: 'right' }}>
+              <div style={{ float: "right" }}>
                 <button
-                  onClick={handleActionEditButtonclose} className='popup-ActionButton'
+                  onClick={handleActionEditButtonclose}
+                  className="popup-ActionButton"
                 >
                   Close
                 </button>
                 <button
-                  onClick={handleEditSubmit} className='popup-ActionButton' style={{ marginLeft: 10 }}
+                  onClick={handleEditSubmit}
+                  className="popup-ActionButton"
+                  style={{ marginLeft: 10 }}
                 >
                   Submit
                 </button>
@@ -830,6 +982,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           </div>
         </div>
       )}
+
 
       {/* ///////////////////////////////////////////////////// */}
 
@@ -957,14 +1110,29 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
             </div>
           </div>
         </div>
-        <div className='form-group' style={{ background: "white", border: "1px solid #bab9b9", overflow: 'hidden' }} ref={filterDropdownRef}>
+        <div className='form-group'
+          style={{
+            background: "white",
+            border: "1px solidrgb(32, 32, 32)",
+            overflow: 'visible'
+          }}
+          ref={filterDropdownRef}>
           <div classname="clsmainheaderrow" style={{ overflowY: 'auto', position: 'relative' }}>
             <table cellPadding="5" style={{ borderCollapse: 'collapse' }} className="custom-grid">
               <thead style={{ top: 0, zIndex: 10, background: 'white' }} className="custom-grid-header">
                 <tr>
                   <th
-                    style={{ width: 25, whiteSpace: 'nowrap', position: "sticky", top: "-2px", zIndex: 111 }}
-                    className="sticky-column">
+                    style={{
+                      width: 25,
+                      whiteSpace: 'nowrap',
+                      position: 'sticky',
+                      top: '-2px',
+                      zIndex: 111,
+                      background: 'white',
+                      boxShadow: ' 0px 1px 2px gray '
+                    }}
+                    className="sticky-column"
+                  >
                     <input
                       type="checkbox"
                       checked={isSelectAllChecked}
@@ -973,56 +1141,80 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                   </th>
                   {visibleColumns
                     .filter((col: any) => col.isVisible)
-                    .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
-                    .map((col: any) => (
-                      <th
-                        className='th-tab'
-                        style={{ textAlign: "left", minWidth: `${col.Width}px`, whiteSpace: 'nowrap', position: "sticky", top: "-2px" }}
-                        key={col.ColumnHeader}
-                        title={col.ColumnHeader}
-                      >
-                        {col.ColumnHeader}
-                        {/* {console.log("column width ", col, col.Width)} */}
-                        <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
-                          <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> ⇅ </button>
-                          <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}>&#8942; </button>
+                    .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
+                    .map((col: any) => {
+                      // If the column is frozen, apply sticky styles with computed left offset.
+                      const frozenStyle = col.isFreeze
+                        ? {
+                          position: 'sticky',
+                          left: frozenOffsets[col.ColumnHeader] + 'px',
+                          zIndex: 102,
+                          // background: '#f1f1f1',
+                          boxShadow: '0px 1px 2px gray'
+                        }
+                        : {
+                          position: 'sticky',
+                          zIndex: 10,
+                          boxShadow: ' 0px 1px 2px gray '
+                        };
 
-                          {columnFilterVisible === col.ColumnHeader && (
-                            <div className="column-visibilityy">
-                              <div className="search-bar2" style={{ margin: "5px" }}>
-                                <div ref={filterDropdownRef} className="filter-dropdown ">
-                                  <div className="select-container">
-                                    <select
-                                      onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)}
-                                      className="autocomplete-input2"
-                                    >
-                                      <option value="" disabled selected>Select Filter</option>
-                                      {renderFilterOptions(col.DataType)}
-                                    </select>
+                      return (
+                        <th
+                          key={col.ColumnHeader}
+                          className='th-tab'
+                          title={col.ColumnHeader}
+                          style={{
+                            textAlign: "left",
+                            minWidth: `${col.Width}px`,
+                            whiteSpace: 'nowrap',
+                            top: '-2px',
+                            ...frozenStyle
+                          }}
+                        >
+                          {col.ColumnHeader}
+                          <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
+                            <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> ⇅ </button>
+                            <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}>&#8942; </button>
+                            {columnFilterVisible === col.ColumnHeader && (
+                              <div className="column-visibilityy">
+                                <div className="search-bar2" style={{ margin: "5px" }}>
+                                  <div ref={filterDropdownRef} className="filter-dropdown ">
+                                    <div className="select-container">
+                                      <select
+                                        onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)}
+                                        className="autocomplete-input2"
+                                      >
+                                        <option value="" disabled selected>Select Filter</option>
+                                        {renderFilterOptions(col.DataType)}
+                                      </select>
+                                    </div>
+                                    {renderFilterInput(col.DataType, col.ColumnHeader)}
+                                    <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }}
+                                      onClick={() => {
+                                        handleclearfilter();
+                                      }}>
+                                      ⟲
+                                    </button>
                                   </div>
-
-                                  {renderFilterInput(col.DataType, col.ColumnHeader)}
-
-                                  <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }}
-                                    onClick={() => {
-                                      handleclearfilter();
-                                      handleclearfilter();
-                                    }}>
-                                    ⟲
-                                  </button>
                                 </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      </th>
-                    ))}
+                            )}
+                          </div>
+                        </th>
+                      );
+                    })}
                 </tr>
               </thead>
+
               <tbody className="custom-grid-body">
                 {paginatedData.map((row, index) => (
                   <tr key={row.id} className={index % 2 === 0 ? "stripedRow" : "table-row"}>
-                    <td className="sticky-column">
+                    <td className="sticky-column" style={{
+                      position: 'sticky',
+                      left: 0,
+                      zIndex: 103,
+                      background: 'white'
+                    }}>
                       <input
                         type="checkbox"
                         checked={selectedRows.includes(row.id)}
@@ -1031,51 +1223,68 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                     </td>
                     {visibleColumns
                       .filter((col: any) => col.isVisible)
-                      .sort((a, b) => a.ColumnOrder - b.ColumnOrder)
-                      .map((col: any) => (
-                        <td
-                          key={col.ColumnHeader}
-                          style={{ textAlign: col.Alignment, minWidth: `${col.Width}px`, borderRight: "1px solid #ccc" }}
-                          onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
-                        >
-                          {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
-                            col.DataType === "string" ? (
-                              <input
-                                type="text"
-                                defaultValue={row[col.ColumnHeader]}
-                                className="editable-input"
-                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
-                              />
-                            ) : col.DataType === "date" ? (
-                              <input
-                                type="date"
-                                defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]}
-                                className="editable-input"
-                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
-                              />
-                            ) : col.DataType === "boolean" ? (
-                              <select
-                                className="editable-input"
-                                defaultValue={row[col.ColumnHeader] ? "true" : "false"}
-                                onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value === "true")}
-                                onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value === "true")}
-                              >
-                                <option value="true">True</option>
-                                <option value="false">False</option>
-                              </select>
-                            ) : null
-                          ) : (
-                            <>
-                              {col.DataType === "boolean" ? (row[col.ColumnHeader] ? "True" : "False") : row[col.ColumnHeader]}
-                            </>
-                          )}
-                        </td>
-                      ))}
+                      .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
+                      .map((col: any) => {
+                        const frozenStyle = col.isFreeze
+                          ? {
+                            position: 'sticky',
+                            left: frozenOffsets[col.ColumnHeader] + 'px',
+                            zIndex: 101,
+                            boxShadow: ' 0px 1px 2px gray '
+                          }
+                          : {};
+                        return (
+                          <td
+                            key={col.ColumnHeader}
+                            className={index % 2 === 0 ? "stripedRow" : "table-row"}
+                            style={{
+                              textAlign: col.Alignment,
+                              minWidth: `${col.Width}px`,
+                              borderRight: "1px solid #ccc",
+                              ...frozenStyle
+                            }}
+                            onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
+                          >
+                            {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
+                              col.DataType === "string" ? (
+                                <input
+                                  type="text"
+                                  defaultValue={row[col.ColumnHeader]}
+                                  className="editable-input"
+                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                                />
+                              ) : col.DataType === "date" ? (
+                                <input
+                                  type="date"
+                                  defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]}
+                                  className="editable-input"
+                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                                />
+                              ) : col.DataType === "boolean" ? (
+                                <select
+                                  className="editable-input"
+                                  defaultValue={row[col.ColumnHeader] ? "true" : "false"}
+                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value === "true")}
+                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value === "true")}
+                                >
+                                  <option value="true">True</option>
+                                  <option value="false">False</option>
+                                </select>
+                              ) : null
+                            ) : (
+                              <>
+                                {col.DataType === "boolean" ? (row[col.ColumnHeader] ? "True" : "False") : row[col.ColumnHeader]}
+                              </>
+                            )}
+                          </td>
+                        );
+                      })}
                   </tr>
                 ))}
               </tbody>
+
 
             </table>
           </div>
