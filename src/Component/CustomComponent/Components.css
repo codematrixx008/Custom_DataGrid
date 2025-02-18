@@ -332,7 +332,9 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 4px;
     height: 22px;
+    position: relative;
 }
+
 
 .sticky-column {
     position: sticky;
@@ -407,7 +409,7 @@ tr {
     background-color: white;
     border-radius: 40px;
     color: #111111;
-    padding:2px;
+    padding: 2px;
 }
 
 .btnfilter {
@@ -420,7 +422,7 @@ tr {
     background-color: white;
     border-radius: 40px;
     color: #111111;
-    padding:2px;
+    padding: 2px;
 }
 
 .btnsort:hover {
@@ -655,9 +657,17 @@ tr {
 select.autocomplete-input2:focus-visible {
     outline: none;
 }
+
 button:not(:disabled) {
     cursor: pointer;
-  }
+}
+
+
+
+
+
+
+
 
 /* Responsive code */
 @media (max-width: 768px) {
@@ -739,9 +749,6 @@ button:not(:disabled) {
         width: 100%;
         padding: 0px;
     }
-    
-    
-      
 
     .DatePicker-custom {
 
