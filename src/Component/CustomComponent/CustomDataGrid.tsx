@@ -456,6 +456,30 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     return distinctValues;
   };
 
+
+
+  const handleFilterConditionChange = (column: string, condition: string) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [column]: {
+        ...prevFilters[column],
+        condition: condition,
+      },
+    }));
+  };
+
+  const handleFilterInputChange = (column: string, value: any) => {
+    console.log("Column and Valur ", column, value);
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [column]: {
+        ...prevFilters[column],
+        value: value,
+      },
+    }));
+  };
+
   const renderFilterInput = (dataType: string, column: string) => {
     switch (dataType) {
       case 'string':
@@ -621,29 +645,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
         return null;
     }
   };
-
-  const handleFilterConditionChange = (column: string, condition: string) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [column]: {
-        ...prevFilters[column],
-        condition: condition,
-      },
-    }));
-  };
-
-  const handleFilterInputChange = (column: string, value: any) => {
-    console.log("Column and Valur ", column, value);
-
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [column]: {
-        ...prevFilters[column],
-        value: value,
-      },
-    }));
-  };
-
+  
   const handlefiltersearch = () => {
     let filteredData = data;
 
@@ -673,16 +675,43 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
             }
           }
           else if (typeof cellValue === 'string') {
-            const strValue = String(cellValue); // Ensure it's a string
-            switch (condition) {
-              case 'contain': return strValue.includes(value);
-              case 'doesnotcontain': return !strValue.includes(value);
-              case 'startwith': return strValue.startsWith(value);
-              case 'endwith': return strValue.endsWith(value);
-              case 'is': return strValue === value;
-              default: return true;
+            // If the condition is one of the date-specific conditions, treat the string as a date.
+            if (['isafter', 'isonorafter', 'isbefore', 'isonorbefore', 'between'].includes(condition)) {
+              const dateValue = new Date(cellValue);
+              switch (condition) {
+                case 'isafter':
+                  return dateValue > new Date(value);
+                case 'isonorafter':
+                  return dateValue >= new Date(value);
+                case 'isbefore':
+                  return dateValue < new Date(value);
+                case 'isonorbefore':
+                  return dateValue <= new Date(value);
+                case 'between':
+                  return dateValue >= new Date(value.startDate) && dateValue <= new Date(value.endDate);
+                default:
+                  return true;
+              }
+            } else {
+              // Otherwise, handle as a standard string filter.
+              const strValue = String(cellValue);
+              switch (condition) {
+                case 'contain':
+                  return strValue.includes(value);
+                case 'doesnotcontain':
+                  return !strValue.includes(value);
+                case 'startwith':
+                  return strValue.startsWith(value);
+                case 'endwith':
+                  return strValue.endsWith(value);
+                case 'is':
+                  return strValue === value;
+                default:
+                  return true;
+              }
             }
           }
+          
           else if (typeof cellValue === 'boolean') {
             const boolValue = value === 'true' || value === true; // Convert value to boolean
             switch (condition) {
