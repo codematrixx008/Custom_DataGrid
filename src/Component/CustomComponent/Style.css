@@ -128,7 +128,7 @@
   background-color: var(--black);
   color: var(--white);
   border: none;
-  padding: 8px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -396,7 +396,7 @@ select.autocomplete-inputs {
 .popup-ActionTitle {
   font-size: 16px;
   font-weight: 500;
-  color: #1080b5;
+  color: #282828;
 }
 
 .popup-ActionLabel {
@@ -413,8 +413,8 @@ select.autocomplete-inputs {
 }
 
 .popup-ActionButton {
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 40px;
+  margin-bottom: 10px;
   background: #1080b5;
   color: white;
   border: none;

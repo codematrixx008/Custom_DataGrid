@@ -407,6 +407,7 @@ tr {
     background-color: white;
     border-radius: 40px;
     color: #111111;
+    padding:2px;
 }
 
 .btnfilter {
@@ -419,6 +420,7 @@ tr {
     background-color: white;
     border-radius: 40px;
     color: #111111;
+    padding:2px;
 }
 
 .btnsort:hover {
@@ -636,15 +638,27 @@ tr {
 .popup-ActionLabel {
     width: 40%;
     color: rgb(61, 59, 59);
+}
+
+.search-button {
+    background-color: var(--black);
+    color: var(--white);
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.searchBoxInput:focus {
+    outline: none;
+}
+
+select.autocomplete-input2:focus-visible {
+    outline: none;
+}
+button:not(:disabled) {
+    cursor: pointer;
   }
-  table {
-    border-collapse: collapse;
-  }
-  
-  table, th, td {
-    border: 1px solid #cfcfcf; /* Change the color of all table borders to red */
-  }
-  
+
 /* Responsive code */
 @media (max-width: 768px) {
     .actions-container {
@@ -725,6 +739,9 @@ tr {
         width: 100%;
         padding: 0px;
     }
+    
+    
+      
 
     .DatePicker-custom {
 

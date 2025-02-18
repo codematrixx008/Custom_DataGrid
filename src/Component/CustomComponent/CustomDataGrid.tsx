@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BsFiletypeCsv, BsFiletypePdf, BsFiletypeXls } from "react-icons/bs";
+import { BsFiletypeCsv, BsFiletypePdf, BsFiletypeXls, BsThreeDotsVertical } from "react-icons/bs";
 import { GrDocumentCsv } from "react-icons/gr";
 import { AiOutlineDelete } from "react-icons/ai";
 import { IoMdAdd } from "react-icons/io";
 import { CiEdit } from "react-icons/ci";
-import { BiLastPage } from "react-icons/bi";
+import { BiLastPage, BiSortAlt2 } from "react-icons/bi";
 import { BiFirstPage } from "react-icons/bi";
 
 // External Libraries
@@ -23,7 +23,8 @@ import { FaCalendar, FaFileCsv } from "react-icons/fa";
 // Custom Styles
 import '../CustomComponent/Components.css';
 import '../CustomComponent/Style.css';
-import { TbBackground } from 'react-icons/tb';
+import { TbBackground, TbReload } from 'react-icons/tb';
+import { TiArrowLeftThick, TiArrowRightThick } from 'react-icons/ti';
 
 
 const styles: { [key: string]: React.CSSProperties } = {
@@ -267,17 +268,32 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value;
     setSearchTerm(value);
 
     const filteredData = data.filter((row: any) =>
       visibleColumns.some((col: any) =>
-        String(row[col.ColumnHeader]).toLowerCase().includes(value)
+        String(row[col.ColumnHeader]).toLowerCase().includes(value.toLowerCase())
       )
     );
 
     setSortedData(filteredData);
     setCurrentPage(1);
+
+
+  };
+
+  const handleClearSearch = () => {
+
+    const filteredData = data.filter((row: any) =>
+      visibleColumns.some((col: any) =>
+        String(row[col.ColumnHeader]).toLowerCase())
+    )
+
+    setSortedData(filteredData);
+    setCurrentPage(1);
+    setSearchTerm('');
+
   };
   const getSelectedExportData = (): typeof sortedData => {
     if (selectedRows.length > 0) {
@@ -427,7 +443,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
       case 'datetime':
         return (
           <>
-            <option value="is">Is</option>
+            {/* <option value="is">Is</option> */}
             <option value="isnot">Is not</option>
             <option value="isafter">Is after</option>
             <option value="isonorafter">Is on or after</option>
@@ -455,8 +471,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     const distinctValues = [...new Set(data.map((row: any) => row[column]))];
     return distinctValues;
   };
-
-
 
   const handleFilterConditionChange = (column: string, condition: string) => {
     setFilters((prevFilters) => ({
@@ -645,7 +659,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
         return null;
     }
   };
-  
+
   const handlefiltersearch = () => {
     let filteredData = data;
 
@@ -697,13 +711,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
               const strValue = String(cellValue);
               switch (condition) {
                 case 'contain':
-                  return strValue.includes(value);
+                  return strValue.toLowerCase().includes(value.toLowerCase());
                 case 'doesnotcontain':
-                  return !strValue.includes(value);
+                  return !strValue.toLowerCase().includes(value.toLowerCase());
                 case 'startwith':
-                  return strValue.startsWith(value);
+                  return strValue.toLowerCase().startsWith(value.toLowerCase());
                 case 'endwith':
-                  return strValue.endsWith(value);
+                  return strValue.toLowerCase().endsWith(value.toLowerCase());
                 case 'is':
                   return strValue === value;
                 default:
@@ -711,7 +725,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
               }
             }
           }
-          
+
           else if (typeof cellValue === 'boolean') {
             const boolValue = value === 'true' || value === true; // Convert value to boolean
             switch (condition) {
@@ -752,7 +766,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     setSortedData(filteredData);
     setCurrentPage(1);
   };
-
 
   const handleclearfilter = () => {
     setFilters({
@@ -812,6 +825,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     </div>
   );
 
+
   const frozenOffsets: { [key: string]: number } = {};
   let offset = 30;
   visibleColumns
@@ -819,7 +833,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
     .forEach((col: any) => {
       frozenOffsets[col.ColumnHeader] = offset;
-      offset += 5 + col.Width;
+      offset += 8 + col.Width;
     });
 
   return (
@@ -964,31 +978,42 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       <input
                         id={`input-${col.ColumnHeader}`}
                         type="date"
-                        value={inputValues[col.ColumnHeader] || ""}
+                        value={
+                          inputValues[col.ColumnHeader]
+                            ? (() => {
+                              const date = new Date(inputValues[col.ColumnHeader]);
+                              const year = date.getFullYear();
+                              const month = String(date.getMonth() + 1).padStart(2, "0");
+                              const day = String(date.getDate()).padStart(2, "0");
+                              return `${year}-${month}-${day}`;
+                            })()
+                            : ""
+                        }
                         onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
                         className="popup-ActionInput"
                         placeholder={col.ColumnHeader}
                       />
-                    ) : col.DataType === "string" ? (
-                      <input
-                        id={`input-${col.ColumnHeader}`}
-                        type="text"
-                        value={inputValues[col.ColumnHeader] || ""}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                        className="popup-ActionInput"
-                        placeholder={col.ColumnHeader}
-                      />
-                    ) : (
-                      // Fallback for any unexpected DataType
-                      <input
-                        id={`input-${col.ColumnHeader}`}
-                        type="text"
-                        value={inputValues[col.ColumnHeader] || ""}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                        className="popup-ActionInput"
-                        placeholder={col.ColumnHeader}
-                      />
-                    )}
+                    )
+                      : col.DataType === "string" ? (
+                        <input
+                          id={`input-${col.ColumnHeader}`}
+                          type="text"
+                          value={inputValues[col.ColumnHeader] || ""}
+                          onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                          className="popup-ActionInput"
+                          placeholder={col.ColumnHeader}
+                        />
+                      ) : (
+                        // Fallback for any unexpected DataType
+                        <input
+                          id={`input-${col.ColumnHeader}`}
+                          type="text"
+                          value={inputValues[col.ColumnHeader] || ""}
+                          onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                          className="popup-ActionInput"
+                          placeholder={col.ColumnHeader}
+                        />
+                      )}
                   </div>
                 ))}
               </div>
@@ -1023,7 +1048,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
             }
           }}>
           <div style={styles.deletePopup} onClick={(e: any) => e.stopPropagation()} >
-            <div className="column-inputs-container" style={{ marginTop: '2px' }}>
+            <div className="column-inputs-container" style={{ marginTop: '15px' }}>
               <span className='popup-ActionTitle'>Are you sure you want to delete this item ?</span>
 
               <div style={{ display: "flex", justifyContent: "end" }}>
@@ -1048,14 +1073,35 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           <span style={{ color: "#085a99" }}
             className='table-title'><h2>{title}</h2></span>
           <div className="actions-container">
-            <div className="search-box">
+            <div className="search-box" style={{ position: "relative" }}>
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={handleSearch}
+                className="searchBoxInput"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={handleClearSearch}
+                  className="clear-button"
+                  style={{
+                    position: "absolute",
+                    right: "10px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    fontSize: "14px"
+                  }}
+                >
+                  <b>×</b>
+                </button>
+              )}
             </div>
+
 
             <div className="buttons headerbuttons">
               {buttonSetting.ButtonAction.includes('Add') && buttonSetting.IsButtonVisible.Add && (
@@ -1158,7 +1204,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                       top: '-2px',
                       zIndex: 111,
                       background: 'white',
-                      boxShadow: ' 0px 1px 2px gray '
+                      // boxShadow: ' 0px 1px 2px gray '
                     }}
                     className="sticky-column"
                   >
@@ -1179,12 +1225,12 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                           left: frozenOffsets[col.ColumnHeader] + 'px',
                           zIndex: 102,
                           // background: '#f1f1f1',
-                          boxShadow: '0px 1px 2px gray'
+                          // boxShadow: '0px 1px 2px gray'
                         }
                         : {
                           position: 'sticky',
                           zIndex: 10,
-                          boxShadow: ' 0px 1px 2px gray '
+                          // boxShadow: ' 0px 1px 2px gray '
                         };
 
                       return (
@@ -1200,10 +1246,10 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                             ...frozenStyle
                           }}
                         >
-                          {col.ColumnHeader}
+                         <span style={{position:'absolute'}}> {col.ColumnHeader}</span>
                           <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
-                            <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> ⇅ </button>
-                            <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}>&#8942; </button>
+                            <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> <BiSortAlt2 /> </button>
+                            <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}><BsThreeDotsVertical /> </button>
                             {columnFilterVisible === col.ColumnHeader && (
                               <div className="column-visibilityy">
                                 <div className="search-bar2" style={{ margin: "5px" }}>
@@ -1222,7 +1268,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                                       onClick={() => {
                                         handleclearfilter();
                                       }}>
-                                      ⟲
+                                      <TbReload />
                                     </button>
                                   </div>
                                 </div>
@@ -1259,7 +1305,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                             position: 'sticky',
                             left: frozenOffsets[col.ColumnHeader] + 'px',
                             zIndex: 101,
-                            boxShadow: ' 0px 1px 2px gray '
+                            // boxShadow: ' 0px 1px 2px gray '
                           }
                           : {};
                         return (
@@ -1283,14 +1329,33 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                                   onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
                                   onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
                                 />
-                              ) : col.DataType === "date" ? (
+                              ) : col.DataType === "number" ? (
                                 <input
-                                  type="date"
-                                  defaultValue={new Date(row[col.ColumnHeader]).toISOString().split("T")[0]}
+                                  type="text"
+                                  defaultValue={row[col.ColumnHeader]}
                                   className="editable-input"
                                   onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
                                   onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
                                 />
+                              ) : col.DataType === "date" ? (
+                                <>
+                                  <input
+                                    type="date"
+                                    defaultValue={
+                                      (() => {
+                                        const date = new Date(row[col.ColumnHeader]);
+                                        const year = date.getFullYear();
+                                        const month = String(date.getMonth() + 1).padStart(2, "0");
+                                        const day = String(date.getDate()).padStart(2, "0");
+                                        return `${year}-${month}-${day}`;
+                                      })()
+                                    }
+                                    className="editable-input"
+                                    onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
+                                    onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                                  />
+                                  {console.log("col.ColumnHeader", col.ColumnHeader, row[col.ColumnHeader])}
+                                </>
                               ) : col.DataType === "boolean" ? (
                                 <select
                                   className="editable-input"
@@ -1341,13 +1406,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                 <BiFirstPage />
               </button>
               <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
-                🡄
+                <TiArrowLeftThick />
               </button>
 
               <span>Page {currentPage} - {totalPages}</span>
 
               <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
-                🡆
+                <TiArrowRightThick />
               </button>
               <button disabled={currentPage === totalPages} onClick={() => handlePageChange(totalPages)}>
                 <BiLastPage />
