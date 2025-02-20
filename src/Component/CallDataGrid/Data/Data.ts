@@ -1,7 +1,12 @@
 export const title = "Employee Record";
 
 export const settings = {
-    dateFormat: "MM/DD/YYYY",
+    dateFormat: "MM-DD-YYYY", 
+    // dateFormat: "YYYY-MM-DD",
+    //dateFormat: "DD-MM-YYYY",
+    // dateFormat: "MM/DD/YYYY", 
+    // dateFormat: "YYYY/MM/DD",
+    // dateFormat: "DD/MM/YYYY",
     fontSize: 13,
     fontFamily: "sans-serif",
     color: 'brown',
@@ -52,58 +57,53 @@ export const listViewColumns = [
     { ColumnHeader: "RemoteWorkEligible", DataType: "boolean", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 20, Alignment: "center" },
 ];
 
-const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
-};
-
 export const tableData = [
     {
         id: 1,
         EmployeeName: "John Cena",
-        BirthDate: formatDate("2024-11-15"),
+        BirthDate: "05-22-2002",
         RelationshipStatus: "Single",
         AnnualIncome: 60000,
         IdentificationNumber: "EMP001",
-        StartDate: formatDate("2015-07-15"),
+        StartDate: "01-14-2022",
         FullTimeEmployment: true,
         ProfessionalExperience: 9,
         WorkDepartment: "Sales",
-        RecentPromotionDate: formatDate("2023-02-10"),
+        RecentPromotionDate: "02-10-2023",
         ManagementPosition: false,
         JobPerformanceRating: 3.8,
         ContactEmail: "john.cena@example.com",
         PhoneNumber: "123-456-7890",
         EmergencyContact: "Jane Doe - 987-654-3210",
-        LastAccessDate: formatDate("2024-09-26"),
+        LastAccessDate: "09-26-2024",
         ActiveEmployeeStatus: true,
         BonusAmount: 5000,
         TaxBracket: "20%",
         RemoteWorkEligible: true
     },
-    ...Array.from({ length: 49 }, (_, i) => ({
+    ...Array.from({ length: 51 }, (_, i) => ({
         id: i + 2,
         EmployeeName: `Employee ${i + 2}`,
-        BirthDate: formatDate(`201${Math.floor(i / 10) + 1}-0${(i % 9) + 1}-15`),
+        BirthDate: `0${(i % 9) + 1}-15-201${Math.floor(i / 10) + 1}`,
         RelationshipStatus: ["Single", "Married", "Divorced"][i % 3],
         AnnualIncome: 50000 + (i * 1000),
         IdentificationNumber: `EMP${(i + 2).toString().padStart(3, '0')}`,
-        StartDate: formatDate(`201${i % 10}-08-20`),
+        StartDate: `08-20-201${i % 10}`,
         FullTimeEmployment: i % 2 === 0,
         ProfessionalExperience: (i % 15) + 1,
         WorkDepartment: ["IT", "HR", "Finance", "Marketing", "Sales"][i % 5],
-        RecentPromotionDate: formatDate(`202${i % 5}-05-10`),
+        RecentPromotionDate: `05-10-202${i % 5}`,
         ManagementPosition: i % 5 === 0,
         JobPerformanceRating: (Math.random() * 5).toFixed(1),
         ContactEmail: `employee${i + 2}@example.com`,
         PhoneNumber: `555-123-${(i % 900) + 100}`,
         EmergencyContact: `Person ${(i % 50) + 1} - 555-789-${(i % 900) + 100}`,
-        LastAccessDate: formatDate(`2024-09-${(i % 28) + 1}`),
+        LastAccessDate: `09-${(i % 28) + 1}-2024`,
         ActiveEmployeeStatus: i % 2 === 0,
         BonusAmount: Math.floor(Math.random() * 5000) + 1000,
         TaxBracket: ["10%", "15%", "20%", "25%"][i % 4],
         RemoteWorkEligible: i % 3 === 0
     }))
 ];
+
 
