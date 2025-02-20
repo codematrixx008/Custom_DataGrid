@@ -354,12 +354,9 @@ h2 {
 
 .th-tab {
     box-shadow: 0px 0px 2px silver;
-    background: #fbfbfb;
-    font-size: 13px;
     text-align: left;
-    /* min-width: 200px; */
-    color: #085a99;
     font-weight: 500;
+    vertical-align: middle;
     border-right: 1px solid #ccc
 }
 
