@@ -117,12 +117,9 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
   useEffect(() => {
     if (showActionPopup.Edit && selectedRows !== null && data && listViewColumns) {
-      console.log(showActionPopup.Edit, "showActionPopup.Edit ");
-      console.log("selectedRows", selectedRows[0]);
-      console.log("data", data);
-      console.log("listViewColumns", listViewColumns);
+    
       const selectedRowData = data.find((row: any) => row.id === selectedRows[0]);
-      console.log(selectedRowData, "selectedRowData");
+     
       if (selectedRowData) {
         const updatedInputValues: { [key: string]: any } = {};
         listViewColumns.forEach((col: any) => {
@@ -159,6 +156,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
   const handleActionEditButtonclose = () => {
     setShowActionPopup({ ...showActionPopup, Edit: false });
+    setInputValues({});
   };
 
   const handleAddSubmit = () => {
@@ -304,8 +302,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const exportToPDF = () => {
     const dataToExport = getSelectedExportData();
 
-    const doc = new jsPDF({ orientation: "landscape", putOnlyUsedFonts: 'true', format: "a3" });
->>>>>>> Stashed changes
+    const doc = new jsPDF({ orientation: "landscape", putOnlyUsedFonts: true, format: "a3" });
+
 
     const headers = visibleColumns
       .filter(col => col.isVisible)
@@ -343,7 +341,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   };
 
   const handleFilterClick = (columnHeader: string) => {
-    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));
+    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));    
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -713,6 +711,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
   const handleDelete = (id: number) => {
     setSortedData((prevData: any) => prevData.filter((item: any) => item.id !== id));
+    setSelectedRows([])
     handleActionDeleteButtonClose();
   };
 
@@ -1170,6 +1169,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                           <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
                             <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> <BiSortAlt2 /> </button>
                             <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}><BsThreeDotsVertical /> </button>
+
                             {columnFilterVisible === col.ColumnHeader && (
                               <div className="column-visibilityy">
                                 <div className="search-bar2" style={{ margin: "5px" }}>
@@ -1302,7 +1302,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
           </div>
           <div className="pagination-container">
             <div className="footer">
-              <span>Total Records: {data.length}</span> &nbsp;&nbsp;&nbsp;
+              <span>Total Records: {sortedData.length}</span> &nbsp;&nbsp;&nbsp;
               <span>Selected Records: {selectedRows.length}</span>
             </div>
             <div className="pagination">
