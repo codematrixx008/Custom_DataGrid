@@ -64,7 +64,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   }
 };
 
-const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) => {
+const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [inputValues, setInputValues] = useState<any>({});
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,7 +111,9 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
 
   useEffect(() => {
     handlefiltersearch();
+
   }, [filters]);
+
 
   useEffect(() => {
     if (showActionPopup.Edit && selectedRows !== null && data && listViewColumns) {
@@ -301,7 +303,9 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
 
   const exportToPDF = () => {
     const dataToExport = getSelectedExportData();
-    const doc = new jsPDF({ orientation: "landscape", putOnlyUsedFonts: "true", format: "a3" });
+
+    const doc = new jsPDF({ orientation: "landscape", putOnlyUsedFonts: 'true', format: "a3" });
+>>>>>>> Stashed changes
 
     const headers = visibleColumns
       .filter(col => col.isVisible)
@@ -758,6 +762,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
     </div>
   );
 
+
+
   const frozenOffsets: { [key: string]: number } = {};
   let offset = 30;
   visibleColumns
@@ -851,7 +857,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
         </div>
       )}
 
-
       {showActionPopup.Edit && (
         <div
           style={styles.overlay}
@@ -902,33 +907,33 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                         className="popup-ActionInput"
                         placeholder={col.ColumnHeader}
                       />
-                    ): col.DataType === "string" ? (
-                    <input
-                      id={`input-${col.ColumnHeader}`}
-                      type="text"
-                      value={inputValues[col.ColumnHeader] || ""}
-                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                      className="popup-ActionInput"
-                      placeholder={col.ColumnHeader}
-                    />
+                    ) : col.DataType === "string" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
                     ) : col.DataType === "number" ? (
-                    <input
-                      id={`input-${col.ColumnHeader}`}
-                      type="number"
-                      value={inputValues[col.ColumnHeader] || ""}
-                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                      className="popup-ActionInput"
-                      placeholder={col.ColumnHeader}
-                    />
-                    ): (
-                    <input
-                      id={`input-${col.ColumnHeader}`}
-                      type="text"
-                      value={inputValues[col.ColumnHeader] || ""}
-                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                      className="popup-ActionInput"
-                      placeholder={col.ColumnHeader}
-                    />
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="number"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
                     )}
                   </div>
                 ))}
@@ -953,7 +958,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           </div>
         </div>
       )}
-
 
       {showActionPopup.Delete && (
         <div style={styles.overlay}
@@ -987,86 +991,88 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           <span style={{ color: "#085a99" }}
             className='table-title'><h2>{title}</h2></span>
           <div className="actions-container">
-            <div className="search-box" style={{ position: "relative" }}>
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchTerm}
-                onChange={handleSearch}
-                className="searchBoxInput"
-              />
-              {searchTerm && (
-                <button
-                  type="button"
-                  onClick={handleClearSearch}
-                  className="clear-button"
-                  style={{
-                    position: "absolute",
-                    right: "10px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    fontSize: "14px"
-                  }}
-                >
-                  <b>×</b>
-                </button>
-              )}
-            </div>
-
+            {settings.isGlobalSearchVisible && (
+              <div className="search-box" style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="searchBoxInput"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="clear-button"
+                    style={{
+                      position: "absolute",
+                      right: "10px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      fontSize: "14px"
+                    }}
+                  >
+                    <b>×</b>
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="buttons headerbuttons">
-              {buttonSetting.ButtonAction.includes('Add') && buttonSetting.IsButtonVisible.Add && (
+              {settings.ButtonAction.includes('Add') && settings.IsButtonVisible.Add && (
+
                 <button className='table-actionbtn'
-                  disabled={!buttonSetting.IsButtonEnabled.Add}
+                  disabled={!settings.IsButtonEnabled.Add}
                   onClick={handleActionAddButton}
                   title='Add'>
                   <IoMdAdd />
                 </button>
               )}
 
-              {buttonSetting.ButtonAction.includes('Edit') && buttonSetting.IsButtonVisible.Edit && (
+              {settings.ButtonAction.includes('Edit') && settings.IsButtonVisible.Edit && (
                 <button className='table-actionbtn'
-                  disabled={!isAnyRowSelected || !buttonSetting.IsButtonEnabled.Edit || selectedRows.length > 1}
+                  disabled={!isAnyRowSelected || !settings.IsButtonEnabled.Edit || selectedRows.length > 1}
                   title='Edit'
                   onClick={handleActionEditButton}>
                   <CiEdit />
                 </button>
               )}
 
-              {buttonSetting.ButtonAction.includes('Delete') && buttonSetting.IsButtonVisible.Delete && (
+              {settings.ButtonAction.includes('Delete') && settings.IsButtonVisible.Delete && (
                 <button className='table-actionbtn'
-                  disabled={!isAnyRowSelected || !buttonSetting.IsButtonEnabled.Delete}
+                  disabled={!isAnyRowSelected || !settings.IsButtonEnabled.Delete}
                   title='Delete'
                   onClick={handleActionDeleteButton}>
                   <AiOutlineDelete />
                 </button>
               )}
 
-              {buttonSetting.ButtonAction.includes('CSV') && buttonSetting.IsButtonVisible.CSV && (
+              {settings.ButtonAction.includes('CSV') && settings.IsButtonVisible.CSV && (
                 <button className="table-actionbtn"
                   onClick={exportToCSV}
-                  disabled={!buttonSetting.IsButtonEnabled.CSV}
+                  disabled={!settings.IsButtonEnabled.CSV}
                   title='CSV'>
                   <BsFiletypeCsv />
                 </button>
               )}
 
-              {buttonSetting.ButtonAction.includes('XLSX') && buttonSetting.IsButtonVisible.XLSX && (
+              {settings.ButtonAction.includes('XLSX') && settings.IsButtonVisible.XLSX && (
                 <button className="table-actionbtn"
                   onClick={exportToExcel}
-                  disabled={!buttonSetting.IsButtonEnabled.XLSX}
+                  disabled={!settings.IsButtonEnabled.XLSX}
                   title='XLSX'>
                   <BsFiletypeXls />
                 </button>
               )}
 
-              {buttonSetting.ButtonAction.includes('PDF') && buttonSetting.IsButtonVisible.PDF && (
+              {settings.ButtonAction.includes('PDF') && settings.IsButtonVisible.PDF && (
                 <button className="table-actionbtn"
                   onClick={exportToPDF}
-                  disabled={!buttonSetting.IsButtonEnabled.PDF}
+                  disabled={!settings.IsButtonEnabled.PDF}
                   title='PDF'>
                   <BsFiletypePdf />
                 </button>
@@ -1074,8 +1080,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
 
 
               <div style={{ position: 'relative', display: 'inline-block' }}>
-                {buttonSetting.ButtonAction.includes('PDF') && buttonSetting.IsButtonVisible.ShowHideColumns && (
-                  <button onClick={handlecolumnvisiblepopup} className='table-actionbtn' disabled={!buttonSetting.IsButtonEnabled.ShowHideColumns} title='ShowHideColumns' >&#9776;</button>
+                {settings.ButtonAction.includes('PDF') && settings.IsButtonVisible.ShowHideColumns && (
+                  <button onClick={handlecolumnvisiblepopup} className='table-actionbtn' disabled={!settings.IsButtonEnabled.ShowHideColumns} title='ShowHideColumns' >&#9776;</button>
                 )}
                 {showColumnVisiblePopUp &&
                   <div ref={popupColumnRef} className="column-visibility" style={{ padding: "10px 0px" }}>
@@ -1151,6 +1157,10 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                           style={{
                             textAlign: "left",
                             minWidth: `${col.Width}px`,
+                            fontSize: settings.fontSize ? `${settings.fontSize}px` : 13,
+                            fontFamily: settings.fontFamily ? settings.fontFamily : 'Arial, sans-serif',
+                            color: settings.color ? settings.color : "black",
+                            background: settings.background ? settings.background : "whitesmoke",
                             whiteSpace: 'nowrap',
                             top: '-2px',
                             ...frozenStyle
@@ -1223,6 +1233,8 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                             style={{
                               textAlign: col.Alignment,
                               minWidth: `${col.Width}px`,
+                              fontSize: settings.fontSize ? `${settings.fontSize-1}px` : 12,
+                              fontFamily: settings.fontFamily ? settings.fontFamily : 'system-ui',
                               borderRight: "1px solid #ccc",
                               ...frozenStyle
                             }}

@@ -1,9 +1,14 @@
 export const title = "Employee Record";
 
-export const buttonSetting = {
-    ButtonAction: ['Add', 'Edit', 'Delete', 'CSV', 'XLSX', 'PDF', 'ShowHideColumns'],
-    IsButtonVisible:
-    {
+export const settings = {
+    dateFormat: "MM/DD/YYYY",
+    fontSize: 13,
+    fontFamily: "sans-serif",
+    color: 'brown',
+    background: 'white',
+    isGlobalSearchVisible: false,
+    ButtonAction: ["Add", "Edit", "Delete", "CSV", "XLSX", "PDF", "ShowHideColumns"],
+    IsButtonVisible: {
         Add: true,
         Edit: true,
         Delete: true,
@@ -12,8 +17,7 @@ export const buttonSetting = {
         PDF: true,
         ShowHideColumns: true
     },
-    IsButtonEnabled:
-    {
+    IsButtonEnabled: {
         Add: true,
         Edit: true,
         Delete: true,
@@ -23,6 +27,7 @@ export const buttonSetting = {
         ShowHideColumns: true
     }
 };
+
 
 export const listViewColumns = [
     { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 150, isVisible: true, isEditable: true, isFreeze: true, Sorting: true, Filtering: true, ColumnOrder: 1, Alignment: "left" },
@@ -49,7 +54,7 @@ export const listViewColumns = [
 
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString; // Return original if invalid
+    if (isNaN(date.getTime())) return dateString;
     return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}/${date.getFullYear()}`;
 };
 
