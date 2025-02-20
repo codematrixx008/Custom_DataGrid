@@ -5,7 +5,7 @@ import {title,settings,listViewColumns,tableData} from './Data/Data.ts';
 export default function CallDataGrid() {
   return (
     <>
-      <div style={{width:'100%',height:'600px'}}>
+      <div style={{width:'100vw',height:'100vh'}}>
         <CustomDataGrid
           title={title}
           settings={settings}
