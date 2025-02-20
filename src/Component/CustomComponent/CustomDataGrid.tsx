@@ -97,6 +97,13 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const isSelectAllChecked = selectedRows.length === paginatedData.length && paginatedData.length > 0;
   const filterDropdownRef = useRef<HTMLDivElement>(null);
   const popupColumnRef = useRef<HTMLDivElement>(null);
+  const frozenColumns = visibleColumns
+    .filter(col => col.isVisible && col.isFreeze)
+    .sort((a, b) => a.ColumnOrder - b.ColumnOrder);
+
+  const nonFrozenColumns = visibleColumns
+    .filter(col => col.isVisible && !col.isFreeze)
+    .sort((a, b) => a.ColumnOrder - b.ColumnOrder);
 
   useEffect(() => {
     if (columnFilterVisible) {
@@ -117,9 +124,9 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
   useEffect(() => {
     if (showActionPopup.Edit && selectedRows !== null && data && listViewColumns) {
-    
+
       const selectedRowData = data.find((row: any) => row.id === selectedRows[0]);
-     
+
       if (selectedRowData) {
         const updatedInputValues: { [key: string]: any } = {};
         listViewColumns.forEach((col: any) => {
@@ -341,7 +348,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   };
 
   const handleFilterClick = (columnHeader: string) => {
-    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));    
+    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -761,17 +768,10 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     </div>
   );
 
-
-
-  const frozenOffsets: { [key: string]: number } = {};
-  let offset = 30;
-  visibleColumns
-    .filter((col: any) => col.isVisible && col.isFreeze)
-    .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
-    .forEach((col: any) => {
-      frozenOffsets[col.ColumnHeader] = offset;
-      offset += 8 + col.Width;
-    });
+  const calculateLeftOffset = (col) => {
+    const index = frozenColumns.findIndex(fCol => fCol.ColumnHeader === col.ColumnHeader);
+    return 30 + frozenColumns.slice(0, index).reduce((acc, curr) => acc + curr.Width+8, 0);
+  };
 
   return (
     <div className="card" style={{ background: "#fcfefe" }}>
@@ -805,7 +805,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         type="checkbox"
                         checked={inputValues[col.ColumnHeader] || false}
                         onChange={(e) => handleInputChange(col.ColumnHeader, e.target.checked)}
-                        className="popup-ActionInput"
+                        className="popup-ActionCheckInput"
                       />
                     ) : col.DataType === "date" ? (
                       <input
@@ -816,10 +816,19 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         className="popup-ActionInput"
                         placeholder={col.ColumnHeader}
                       />
-                    ) : col.DataType === "string" || col.DataType === "number" ? (
+                    ) : col.DataType === "string" ? (
                       <input
                         id={`input-${col.ColumnHeader}`}
                         type="text"
+                        value={inputValues[col.ColumnHeader] || ""}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        className="popup-ActionInput"
+                        placeholder={col.ColumnHeader}
+                      />
+                    ) : col.DataType === "number" ? (
+                      <input
+                        id={`input-${col.ColumnHeader}`}
+                        type="number"
                         value={inputValues[col.ColumnHeader] || ""}
                         onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
                         className="popup-ActionInput"
@@ -885,7 +894,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         type="checkbox"
                         checked={inputValues[col.ColumnHeader] || false}
                         onChange={(e) => handleInputChange(col.ColumnHeader, e.target.checked)}
-                        className="popup-ActionInput"
+                        className="popup-ActioncheckInput"
                       />
                     ) : col.DataType === "date" ? (
                       <input
@@ -1079,7 +1088,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
 
               <div style={{ position: 'relative', display: 'inline-block' }}>
-                {settings.ButtonAction.includes('PDF') && settings.IsButtonVisible.ShowHideColumns && (
+                {settings.IsButtonVisible.ShowHideColumns && (
                   <button onClick={handlecolumnvisiblepopup} className='table-actionbtn' disabled={!settings.IsButtonEnabled.ShowHideColumns} title='ShowHideColumns' >&#9776;</button>
                 )}
                 {showColumnVisiblePopUp &&
@@ -1111,190 +1120,101 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
             overflow: 'visible'
           }}
           ref={filterDropdownRef}>
-          <div classname="clsmainheaderrow" style={{ overflowY: 'auto', position: 'relative' }}>
-            <table cellPadding="5" style={{ borderCollapse: 'collapse' }} className="custom-grid">
-              <thead style={{ top: 0, zIndex: 10, background: 'white' }} className="custom-grid-header">
+          <div classname="clsmainheaderrow" style={{ overflowY: 'auto', position: 'relative', height: '100%' }}>
+            <table cellPadding="5" className="custom-grid" style={{ borderCollapse: 'collapse' }}>
+              <thead className="custom-grid-header" style={{ top: 0, zIndex: 10, background: 'white' }}>
                 <tr>
-                  <th
-                    style={{
-                      width: 25,
-                      whiteSpace: 'nowrap',
-                      position: 'sticky',
-                      top: '-2px',
-                      zIndex: 111,
-                      background: 'white'
-                    }}
-                    className="sticky-column"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isSelectAllChecked}
-                      onChange={handleSelectAllChange}
-                    />
+                  <th className="sticky-column" style={{ width: 25, position: 'sticky', left: 0, top: '-2px', zIndex: 111, background: settings.background || "whitesmoke" }}>
+                    <input type="checkbox" checked={isSelectAllChecked} onChange={handleSelectAllChange} />
                   </th>
-                  {visibleColumns
-                    .filter((col: any) => col.isVisible)
-                    .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
-                    .map((col: any) => {
-
-                      const frozenStyle = col.isFreeze
-                        ? {
-                          position: 'sticky',
-                          left: frozenOffsets[col.ColumnHeader] + 'px',
-                          zIndex: 102,
-                        }
-                        : {
-                          position: 'sticky',
-                          zIndex: 10,
-                        };
-
-                      return (
-                        <th
-                          key={col.ColumnHeader}
-                          className='th-tab'
-                          title={col.ColumnHeader}
-                          style={{
-                            textAlign: "left",
-                            minWidth: `${col.Width}px`,
-                            fontSize: settings.fontSize ? `${settings.fontSize}px` : 13,
-                            fontFamily: settings.fontFamily ? settings.fontFamily : 'Arial, sans-serif',
-                            color: settings.color ? settings.color : "black",
-                            background: settings.background ? settings.background : "whitesmoke",
-                            whiteSpace: 'nowrap',
-                            top: '-2px',
-                            ...frozenStyle
-                          }}
-                        >
-                          <span style={{ position: 'absolute' }}> {col.ColumnHeader}</span>
-                          <div style={{ position: 'relative', display: 'inline-block', float: 'right' }}>
-                            <button className="btnsort" onClick={() => handleSortClick(col.ColumnHeader)}> <BiSortAlt2 /> </button>
-                            <button className='btnfilter' onClick={() => handleFilterClick(col.ColumnHeader)}><BsThreeDotsVertical /> </button>
-
-                            {columnFilterVisible === col.ColumnHeader && (
-                              <div className="column-visibilityy">
-                                <div className="search-bar2" style={{ margin: "5px" }}>
-                                  <div ref={filterDropdownRef} className="filter-dropdown ">
-                                    <div className="select-container">
-                                      <select
-                                        onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)}
-                                        className="autocomplete-input2"
-                                      >
-                                        <option value="" disabled selected>Select Filter</option>
-                                        {renderFilterOptions(col.DataType)}
-                                      </select>
-                                    </div>
-                                    {renderFilterInput(col.DataType, col.ColumnHeader)}
-                                    <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }}
-                                      onClick={() => {
-                                        handleclearfilter();
-                                      }}>
-                                      <TbReload />
-                                    </button>
-                                  </div>
+                  {[...frozenColumns, ...nonFrozenColumns].map((col) => (
+                    <th
+                      key={col.ColumnHeader}
+                      className={`th-tab sticky-columns ${col.isFreeze ? 'sticky-column' : ''}`}
+                      title={col.ColumnHeader}
+                      style={{
+                        textAlign: "left",
+                        minWidth: `${col.Width}px`,
+                        fontSize: settings.fontSize ? `${settings.fontSize}px` : '13px',
+                        fontFamily: settings.fontFamily || 'Arial, sans-serif',
+                        color: settings.color || 'black',
+                        background: settings.background || 'whitesmoke',
+                        // position: col.isFreeze ? 'sticky' : 'static',
+                        left: col.isFreeze ? `${calculateLeftOffset(col)}px` : undefined,
+                        zIndex: col.isFreeze ? 110 : 1,
+                        whiteSpace: 'nowrap',
+                        top: '-2px',
+                      }}
+                    >
+                      <span style={{ position: 'absolute', marginTop: '2px' }}>{col.ColumnHeader}</span>
+                      <div style={{ display: 'inline-block', float: 'right' }}>
+                        <button className="btnsort" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleSortClick(col.ColumnHeader)}>
+                          <BiSortAlt2 />
+                        </button>
+                        <button className="btnfilter" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleFilterClick(col.ColumnHeader)}>
+                          <BsThreeDotsVertical />
+                        </button>
+                        {columnFilterVisible === col.ColumnHeader && (
+                          <div className="column-visibilityy">
+                            <div className="search-bar2" style={{ margin: '5px' }}>
+                              <div ref={filterDropdownRef} className="filter-dropdown">
+                                <div className="select-container">
+                                  <select onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)} className="autocomplete-input2" defaultValue="">
+                                    <option value="" disabled>Select Filter</option>
+                                    {renderFilterOptions(col.DataType)}
+                                  </select>
                                 </div>
+                                {renderFilterInput(col.DataType, col.ColumnHeader)}
+                                <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }} onClick={handleclearfilter}>
+                                  <TbReload />
+                                </button>
                               </div>
-                            )}
+                            </div>
                           </div>
-                        </th>
-                      );
-                    })}
+                        )}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="custom-grid-body">
-                {paginatedData.map((row, index) => (
-                  <tr key={row.id} className={index % 2 === 0 ? "stripedRow" : "table-row"}>
-                    <td className="sticky-column" style={{
-                      position: 'sticky',
-                      left: 0,
-                      zIndex: 103,
-                      background: 'white'
-                    }}>
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.includes(row.id)}
-                        onChange={() => handleCheckboxChange(row.id)}
-                      />
+                {paginatedData.map((row, rowIndex) => (
+                  <tr key={row.id} className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}>
+                    <td className="sticky-column" style={{ position: 'sticky', left: 0, zIndex: 103 }}>
+                      <input type="checkbox" checked={selectedRows.includes(row.id)} onChange={() => handleCheckboxChange(row.id)} />
                     </td>
-                    {visibleColumns
-                      .filter((col: any) => col.isVisible)
-                      .sort((a: any, b: any) => a.ColumnOrder - b.ColumnOrder)
-                      .map((col: any) => {
-                        const frozenStyle = col.isFreeze
-                          ? {
-                            position: 'sticky',
-                            left: frozenOffsets[col.ColumnHeader] + 'px',
-                            zIndex: 101,
-                          }
-                          : {};
-                        return (
-                          <td
-                            key={col.ColumnHeader}
-                            className={index % 2 === 0 ? "stripedRow" : "table-row"}
-                            style={{
-                              textAlign: col.Alignment,
-                              minWidth: `${col.Width}px`,
-                              fontSize: settings.fontSize ? `${settings.fontSize-1}px` : 12,
-                              fontFamily: settings.fontFamily ? settings.fontFamily : 'system-ui',
-                              borderRight: "1px solid #ccc",
-                              ...frozenStyle
-                            }}
-                            onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
-                          >
-                            {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
-                              col.DataType === "string" ? (
-                                <input
-                                  type="text"
-                                  defaultValue={row[col.ColumnHeader]}
-                                  className="editable-input"
-                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
-                                />
-                              ) : col.DataType === "number" ? (
-                                <input
-                                  type="number"
-                                  defaultValue={row[col.ColumnHeader]}
-                                  className="editable-input"
-                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
-                                />
-                              ) : col.DataType === "date" ? (
-                                <>
-                                  <input
-                                    type="date"
-                                    defaultValue={
-                                      (() => {
-                                        const date = new Date(row[col.ColumnHeader]);
-                                        const year = date.getFullYear();
-                                        const month = String(date.getMonth() + 1).padStart(2, "0");
-                                        const day = String(date.getDate()).padStart(2, "0");
-                                        return `${year}-${month}-${day}`;
-                                      })()
-                                    }
-                                    className="editable-input"
-                                    onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                    onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
-                                  />
-                                  {console.log("col.ColumnHeader", col.ColumnHeader, row[col.ColumnHeader])}
-                                </>
-                              ) : col.DataType === "boolean" ? (
-                                <input
-                                  type="checkbox"
-                                  checked={row[col.ColumnHeader]}
-                                  onChange={(e: any) => handleEditableInput(col.ColumnHeader, e.target.checked)}
-                                />
-                              ) : null
-                            ) : (
-                              <>
-                                {col.DataType === "boolean" ? (
-                                  <input type="checkbox" checked={row[col.ColumnHeader]} disabled />
-                                ) : (
-                                  row[col.ColumnHeader]
-                                )}
-                              </>
-                            )}
-                          </td>
-                        );
-                      })}
+                    {[...frozenColumns, ...nonFrozenColumns].map((col) => (
+                      <td
+                        key={col.ColumnHeader}
+                        className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}
+                        style={{
+                          textAlign: col.Alignment,
+                          minWidth: `${col.Width}px`,
+                          fontSize: settings.fontSize ? `${settings.fontSize - 1}px` : '12px',
+                          fontFamily: settings.fontFamily || 'system-ui',
+                          borderRight: '1px solid #ccc',
+                          position: col.isFreeze ? 'sticky' : 'static',
+                          left: col.isFreeze ? `${calculateLeftOffset(col)}px` : undefined,
+                           background: col.isFreeze ? (settings.freezebackground || 'whitesmoke') : 'transparent',
+                          zIndex: col.isFreeze ? 100 : 1,
+                        }}
+                        onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
+                      >
+                        {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
+                          col.DataType === 'string' ? (
+                            <input type="text" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
+                          ) : col.DataType === 'number' ? (
+                            <input type="number" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
+                          ) : col.DataType === 'date' ? (
+                            <input type="date" defaultValue={new Date(row[col.ColumnHeader]).toISOString().split('T')[0]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
+                          ) : col.DataType === 'boolean' ? (
+                            <input type="checkbox" checked={row[col.ColumnHeader]} onChange={(e) => handleEditableInput(col.ColumnHeader, e.target.checked)} />
+                          ) : null
+                        ) : (
+                          col.DataType === 'boolean' ? <input type="checkbox" checked={row[col.ColumnHeader]} disabled /> : row[col.ColumnHeader]
+                        )}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>

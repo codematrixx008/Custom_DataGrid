@@ -2,11 +2,12 @@ export const title = "Employee Record";
 
 export const settings = {
     dateFormat: "MM/DD/YYYY",
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: "sans-serif",
-    color: 'brown',
-    background: 'white',
-    isGlobalSearchVisible: false,
+    color: 'white',
+    background: ' #65af0c ',
+    isGlobalSearchVisible: true,
+    freezebackground:'rgb(217, 243, 186) ',   
     ButtonAction: ["Add", "Edit", "Delete", "CSV", "XLSX", "PDF", "ShowHideColumns"],
     IsButtonVisible: {
         Add: true,
@@ -30,7 +31,7 @@ export const settings = {
 
 
 export const listViewColumns = [
-    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 150, isVisible: true, isEditable: true, isFreeze: true, Sorting: true, Filtering: true, ColumnOrder: 1, Alignment: "left" },
+    { ColumnHeader: "EmployeeName", DataType: "string", Tooltip: true, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 13, Alignment: "left" },
     { ColumnHeader: "BirthDate", DataType: "date", Tooltip: false, Width: 120, isVisible: true, isEditable: true, isFreeze: true, Sorting: true, Filtering: true, ColumnOrder: 6, Alignment: "left" },
     { ColumnHeader: "RelationshipStatus", DataType: "string", Tooltip: false, Width: 170, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 3, Alignment: "left" },
     { ColumnHeader: "AnnualIncome", DataType: "number", Tooltip: false, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 4, Alignment: "center" },
@@ -42,7 +43,7 @@ export const listViewColumns = [
     { ColumnHeader: "RecentPromotionDate", DataType: "date", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 10, Alignment: "center" },
     { ColumnHeader: "ManagementPosition", DataType: "boolean", Tooltip: false, Width: 150, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 11, Alignment: "center" },
     { ColumnHeader: "JobPerformanceRating", DataType: "number", Tooltip: false, Width: 210, isVisible: true, isEditable: true, isFreeze: true, Sorting: true, Filtering: true, ColumnOrder: 12, Alignment: "center" },
-    { ColumnHeader: "ContactEmail", DataType: "string", Tooltip: false, Width: 220, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 13, Alignment: "left" },
+    { ColumnHeader: "ContactEmail", DataType: "string", Tooltip: false, Width: 220, isVisible: true, isEditable: true, isFreeze: true, Sorting: false, Filtering: true, ColumnOrder: 1, Alignment: "left" },
     { ColumnHeader: "PhoneNumber", DataType: "string", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 14, Alignment: "left" },
     { ColumnHeader: "EmergencyContact", DataType: "string", Tooltip: false, Width: 200, isVisible: true, isEditable: true, isFreeze: false, Sorting: false, Filtering: true, ColumnOrder: 15, Alignment: "left" },
     { ColumnHeader: "LastAccessDate", DataType: "date", Tooltip: false, Width: 180, isVisible: true, isEditable: true, isFreeze: false, Sorting: true, Filtering: true, ColumnOrder: 16, Alignment: "center" },
@@ -82,7 +83,7 @@ export const tableData = [
         TaxBracket: "20%",
         RemoteWorkEligible: true
     },
-    ...Array.from({ length: 49 }, (_, i) => ({
+    ...Array.from({ length: 499 }, (_, i) => ({
         id: i + 2,
         EmployeeName: `Employee ${i + 2}`,
         BirthDate: formatDate(`201${Math.floor(i / 10) + 1}-0${(i % 9) + 1}-15`),
@@ -106,4 +107,3 @@ export const tableData = [
         RemoteWorkEligible: i % 3 === 0
     }))
 ];
-
