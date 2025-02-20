@@ -795,16 +795,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                     </label>
 
                     {col.DataType === "boolean" ? (
-                      <select
+                      <input
                         id={`input-${col.ColumnHeader}`}
-                        value={String(inputValues[col.ColumnHeader] || "")}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        type="checkbox"
+                        checked={inputValues[col.ColumnHeader] || false}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.checked)}
                         className="popup-ActionInput"
-                      >
-                        <option value="">Select</option>
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
+                      />
                     ) : col.DataType === "date" ? (
                       <input
                         id={`input-${col.ColumnHeader}`}
@@ -814,17 +811,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                         className="popup-ActionInput"
                         placeholder={col.ColumnHeader}
                       />
-                    ) : col.DataType === "string" ? (
-                      <input
-                        id={`input-${col.ColumnHeader}`}
-                        type="text"
-                        value={inputValues[col.ColumnHeader] || ""}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                        className="popup-ActionInput"
-                        placeholder={col.ColumnHeader}
-                      />
-                    ) : col.DataType === "number" ? (
-
+                    ) : col.DataType === "string" || col.DataType === "number" ? (
                       <input
                         id={`input-${col.ColumnHeader}`}
                         type="text"
@@ -843,7 +830,6 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                         placeholder={col.ColumnHeader}
                       />
                     )}
-
                   </div>
                 ))}
               </div>
@@ -864,6 +850,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           </div>
         </div>
       )}
+
 
       {showActionPopup.Edit && (
         <div
@@ -889,16 +876,13 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                     </label>
 
                     {col.DataType === "boolean" ? (
-                      <select
+                      <input
                         id={`input-${col.ColumnHeader}`}
-                        value={String(inputValues[col.ColumnHeader] || "")}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                        type="checkbox"
+                        checked={inputValues[col.ColumnHeader] || false}
+                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.checked)}
                         className="popup-ActionInput"
-                      >
-                        <option value="">Select</option>
-                        <option value="true">True</option>
-                        <option value="false">False</option>
-                      </select>
+                      />
                     ) : col.DataType === "date" ? (
                       <input
                         id={`input-${col.ColumnHeader}`}
@@ -918,28 +902,38 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                         className="popup-ActionInput"
                         placeholder={col.ColumnHeader}
                       />
-                    ) : col.DataType === "string" ? (
-                      <input
-                        id={`input-${col.ColumnHeader}`}
-                        type="text"
-                        value={inputValues[col.ColumnHeader] || ""}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                        className="popup-ActionInput"
-                        placeholder={col.ColumnHeader}
-                      />
-                    ) : (
-                      <input
-                        id={`input-${col.ColumnHeader}`}
-                        type="text"
-                        value={inputValues[col.ColumnHeader] || ""}
-                        onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
-                        className="popup-ActionInput"
-                        placeholder={col.ColumnHeader}
-                      />
+                    ): col.DataType === "string" ? (
+                    <input
+                      id={`input-${col.ColumnHeader}`}
+                      type="text"
+                      value={inputValues[col.ColumnHeader] || ""}
+                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                      className="popup-ActionInput"
+                      placeholder={col.ColumnHeader}
+                    />
+                    ) : col.DataType === "number" ? (
+                    <input
+                      id={`input-${col.ColumnHeader}`}
+                      type="number"
+                      value={inputValues[col.ColumnHeader] || ""}
+                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                      className="popup-ActionInput"
+                      placeholder={col.ColumnHeader}
+                    />
+                    ): (
+                    <input
+                      id={`input-${col.ColumnHeader}`}
+                      type="text"
+                      value={inputValues[col.ColumnHeader] || ""}
+                      onChange={(e) => handleInputChange(col.ColumnHeader, e.target.value)}
+                      className="popup-ActionInput"
+                      placeholder={col.ColumnHeader}
+                    />
                     )}
                   </div>
                 ))}
               </div>
+
               <div style={{ float: "right" }}>
                 <button
                   onClick={handleActionEditButtonclose}
@@ -959,6 +953,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
           </div>
         </div>
       )}
+
 
       {showActionPopup.Delete && (
         <div style={styles.overlay}
@@ -1244,7 +1239,7 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                                 />
                               ) : col.DataType === "number" ? (
                                 <input
-                                  type="text"
+                                  type="number"
                                   defaultValue={row[col.ColumnHeader]}
                                   className="editable-input"
                                   onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
@@ -1270,19 +1265,19 @@ const CustomDataGrid = ({ title, buttonSetting, listViewColumns, data }: any) =>
                                   {console.log("col.ColumnHeader", col.ColumnHeader, row[col.ColumnHeader])}
                                 </>
                               ) : col.DataType === "boolean" ? (
-                                <select
-                                  className="editable-input"
-                                  defaultValue={row[col.ColumnHeader] ? "true" : "false"}
-                                  onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value === "true")}
-                                  onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value === "true")}
-                                >
-                                  <option value="true">True</option>
-                                  <option value="false">False</option>
-                                </select>
+                                <input
+                                  type="checkbox"
+                                  checked={row[col.ColumnHeader]}
+                                  onChange={(e: any) => handleEditableInput(col.ColumnHeader, e.target.checked)}
+                                />
                               ) : null
                             ) : (
                               <>
-                                {col.DataType === "boolean" ? (row[col.ColumnHeader] ? "True" : "False") : row[col.ColumnHeader]}
+                                {col.DataType === "boolean" ? (
+                                  <input type="checkbox" checked={row[col.ColumnHeader]} disabled />
+                                ) : (
+                                  row[col.ColumnHeader]
+                                )}
                               </>
                             )}
                           </td>
