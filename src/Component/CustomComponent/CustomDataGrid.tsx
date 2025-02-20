@@ -71,7 +71,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  const [sortedData, setSortedData] = useState(data);
+  const [sortedData, setSortedData] = useState([]);
   const [selectedsortedData, setSelectedSortedData] = useState(data);
   const totalPages = Math.ceil(sortedData.length / pageSize);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -94,9 +94,11 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   });
   const [editCell, setEditCell] = useState<{ rowId: number; ColumnHeader: string } | null>(null);
   const paginatedData = sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  // const paginatedData = []
   const isSelectAllChecked = selectedRows.length === paginatedData.length && paginatedData.length > 0;
   const filterDropdownRef = useRef<HTMLDivElement>(null);
   const popupColumnRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     if (columnFilterVisible) {
@@ -115,11 +117,74 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   }, [filters]);
 
 
+
+
+  // const formatDate = (date, targetFormat) => {
+  //   if (!date || !targetFormat) return date;
+  //   // Extract month, day, and year from MM-DD-YYYY format
+  //   const [month, day, year] = date.split("-");
+  //   if (targetFormat === "MM-DD-YYYY") return date;
+  //   if (targetFormat === "YYYY-MM-DD") return `${year}-${month}-${day}`;
+  //   if (targetFormat === "DD-MM-YYYY") return `${day}-${month}-${year}`;
+  //   return date; // Return as is if format is unknown
+  // };
+
+  const formatDate = (date, targetFormat) => {
+    if (!date || !targetFormat) return date;
+  
+    // Handle both "-" and "/" as separators
+    const parts = date.split(/[-/]/);
+    if (parts.length !== 3 || parts.some(isNaN)) return date;
+  
+    let [year, month, day] =
+      date.includes("/") ? [parts[2], parts[0], parts[1]] : [parts[2], parts[0], parts[1]]; // Default MM-DD-YYYY
+  
+    // Convert based on target format
+    switch (targetFormat) {
+      case "MM-DD-YYYY":
+        return `${month}-${day}-${year}`;
+      case "MM/DD/YYYY":
+        return `${month}/${day}/${year}`;
+      case "YYYY-MM-DD":
+        return `${year}-${month}-${day}`;
+      case "YYYY/MM/DD":
+        return `${year}/${month}/${day}`;
+      case "DD-MM-YYYY":
+        return `${day}-${month}-${year}`;
+      case "DD/MM/YYYY":
+        return `${day}/${month}/${year}`;
+      default:
+        return date; // Return original if format is unknown
+    }
+  };
+
+  useEffect(() => {
+    if (!data || !settings?.dateFormat) return;
+
+    setSortedData(
+      data.map((item) => {
+
+        let formattedItem = { ...item };
+        listViewColumns.forEach(({ ColumnHeader, DataType }) => {
+          if (DataType === "date" && item[ColumnHeader]) {
+            formattedItem[ColumnHeader] = formatDate(item[ColumnHeader], settings.dateFormat);
+          }
+        });
+        return formattedItem;
+
+      })
+    );
+  }, [data, settings]);
+
+
+
+
+
   useEffect(() => {
     if (showActionPopup.Edit && selectedRows !== null && data && listViewColumns) {
-    
+
       const selectedRowData = data.find((row: any) => row.id === selectedRows[0]);
-     
+
       if (selectedRowData) {
         const updatedInputValues: { [key: string]: any } = {};
         listViewColumns.forEach((col: any) => {
@@ -341,7 +406,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   };
 
   const handleFilterClick = (columnHeader: string) => {
-    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));    
+    setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -1233,7 +1298,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                             style={{
                               textAlign: col.Alignment,
                               minWidth: `${col.Width}px`,
-                              fontSize: settings.fontSize ? `${settings.fontSize-1}px` : 12,
+                              fontSize: settings.fontSize ? `${settings.fontSize - 1}px` : 12,
                               fontFamily: settings.fontFamily ? settings.fontFamily : 'system-ui',
                               borderRight: "1px solid #ccc",
                               ...frozenStyle
@@ -1261,20 +1326,49 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                                 <>
                                   <input
                                     type="date"
-                                    defaultValue={
-                                      (() => {
-                                        const date = new Date(row[col.ColumnHeader]);
-                                        const year = date.getFullYear();
-                                        const month = String(date.getMonth() + 1).padStart(2, "0");
-                                        const day = String(date.getDate()).padStart(2, "0");
-                                        return `${year}-${month}-${day}`;
-                                      })()
-                                    }
+                                    defaultValue={(() => {
+                                      const dateStr = row[col.ColumnHeader]?.trim();
+                                      if (!dateStr) return "";
+
+                                      const parts = dateStr.split(/[-/]/);
+                                      if (parts.length !== 3 || parts.some(isNaN)) return "";
+
+                                      let [year, month, day] =
+                                        settings?.dateFormat === "DD-MM-YYYY" || settings?.dateFormat === "DD/MM/YYYY" ? [parts[2], parts[1], parts[0]] :
+                                          settings?.dateFormat === "MM-DD-YYYY" || settings?.dateFormat === "MM/DD/YYYY" ? [parts[2], parts[0], parts[1]] :
+                                            parts; // Default: YYYY-MM-DD or YYYY/MM/DD
+
+                                      year = Number(year);
+                                      month = String(Number(month)).padStart(2, "0");
+                                      day = String(Number(day)).padStart(2, "0");
+
+                                      return isNaN(year) || isNaN(Number(month)) || isNaN(Number(day)) ? "" :
+                                        `${year}-${month}-${day}`;
+                                    })()}
                                     className="editable-input"
-                                    onBlur={(e: any) => handleEditableInput(col.ColumnHeader, e.target.value)}
-                                    onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)}
+                                    onBlur={(e) => {
+                                      let [year, month, day] = e.target.value.split("-").map(Number);
+                                      if (isNaN(year) || isNaN(month) || isNaN(day)) return;
+
+                                      month = String(month).padStart(2, "0");
+                                      day = String(day).padStart(2, "0");
+
+                                      let formattedDate =
+                                        settings?.dateFormat === "DD-MM-YYYY" ? `${day}-${month}-${year}` :
+                                          settings?.dateFormat === "DD/MM/YYYY" ? `${day}/${month}/${year}` :
+                                            settings?.dateFormat === "MM-DD-YYYY" ? `${month}-${day}-${year}` :
+                                              settings?.dateFormat === "MM/DD/YYYY" ? `${month}/${day}/${year}` :
+                                                settings?.dateFormat === "YYYY/MM/DD" ? `${year}/${month}/${day}` :
+                                                  e.target.value; // Default: YYYY-MM-DD
+
+                                      handleEditableInput(col.ColumnHeader, formattedDate);
+                                    }}
+                                    onKeyDown={(e) => e.key === "Enter" && e.target.blur()}
                                   />
-                                  {console.log("col.ColumnHeader", col.ColumnHeader, row[col.ColumnHeader])}
+
+
+
+
                                 </>
                               ) : col.DataType === "boolean" ? (
                                 <input
