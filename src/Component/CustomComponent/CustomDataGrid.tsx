@@ -895,12 +895,12 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               </div>
 
               <div style={{ float: 'right' }}>
-                <button onClick={handleActionAddButtonclose} className="popup-ActionButton">
+                <button onClick={handleActionAddButtonclose} style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}} className="popup-ActionButton">
                   Close
                 </button>
                 <button
                   onClick={handleAddSubmit}
-                  style={{ marginLeft: 10 }}
+                  style={{ marginLeft: 10,background: settings.background || 'whitesmoke', color: settings.color || 'black' }}
                   className="popup-ActionButton"
                 >
                   Submit
@@ -997,13 +997,14 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 <button
                   onClick={handleActionEditButtonclose}
                   className="popup-ActionButton"
+                  style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}}
                 >
                   Close
                 </button>
                 <button
                   onClick={handleEditSubmit}
                   className="popup-ActionButton"
-                  style={{ marginLeft: 10 }}
+                  style={{ marginLeft: 10 ,background: settings.background || 'whitesmoke', color: settings.color || 'black'}}
                 >
                   Submit
                 </button>
@@ -1025,10 +1026,10 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <span className='popup-ActionTitle'>Are you sure you want to delete this item ?</span>
 
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <button onClick={handleActionDeleteButtonClose} className='popup-ActionButton'>
+                <button onClick={handleActionDeleteButtonClose} style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}} className='popup-ActionButton'>
                   Close
                 </button>
-                <button style={{ marginLeft: 10 }} className='popup-ActionButton' onClick={() => {
+                <button style={{ marginLeft: 10,background: settings.background || 'whitesmoke', color: settings.color || 'black' }} className='popup-ActionButton' onClick={() => {
                   selectedRows.forEach((id) => handleDelete(id));
                 }} >
                   Submit
