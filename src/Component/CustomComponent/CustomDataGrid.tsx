@@ -17,6 +17,8 @@ import '../CustomComponent/Components.css';
 import '../CustomComponent/Style.css';
 import { TbBackground, TbReload } from 'react-icons/tb';
 import { TiArrowLeftThick, TiArrowRightThick } from 'react-icons/ti';
+import { LuPin } from 'react-icons/lu';
+import { RiPushpinFill, RiPushpinLine } from 'react-icons/ri';
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -823,6 +825,22 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     return 30 + frozenColumns.slice(0, index).reduce((acc, curr) => acc + curr.Width + 8, 0);
   };
 
+  const [pinnedColumns, setPinnedColumns] = useState<{ [key: string]: boolean }>({});
+
+  const togglePin = (columnHeader: string) => {
+    setPinnedColumns((prev) => ({
+      ...prev,
+      [columnHeader]: !prev[columnHeader],
+    }));
+    
+    setVisibleColumns((prevColumns: any) =>
+      prevColumns.map((col: any) =>
+        col.ColumnHeader === columnHeader
+          ? { ...col, isFreeze: !col.isFreeze }
+          : col
+      )
+    );
+  };
   return (
     <div className="main-card-container">
 
@@ -899,9 +917,13 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               </div>
 
               <div className="popup-button-container">
-                <button onClick={handleActionAddButtonclose} className="popup-ActionButton" 
-                style={{ background: settings.background || 'whitesmoke', 
-                color: settings.color || 'black' }} >
+
+                <button onClick={handleActionAddButtonclose} className="popup-ActionButton"
+                  style={{
+                    background: settings.background || 'whitesmoke',
+                    color: settings.color || 'black'
+                  }} >
+
                   Close
                 </button>
                 <button
@@ -1142,15 +1164,31 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                     <div className='inner-column-visibility' >
 
                       {listViewColumns.map((col: any, index: number) => (
-                        <div key={index} className="checkbox-container">
-                          <input
-                            type="checkbox"
-                            id={`checkbox-${index}`}
-                            checked={visibleColumns.find((visibleCol: any) => visibleCol.ColumnHeader === col.ColumnHeader)?.isVisible}
-                            onChange={() => handleColumnVisibilityChange(col.ColumnHeader)}
-                          />
-                          <label htmlFor={`checkbox-${index}`}>{col.ColumnHeader}</label>
+                        <div
+                          key={index}
+                          className="checkbox-container"
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              type="checkbox"
+                              id={`checkbox-${index}`}
+                              checked={visibleColumns.find((visibleCol: any) => visibleCol.ColumnHeader === col.ColumnHeader)?.isVisible}
+                              onChange={() => handleColumnVisibilityChange(col.ColumnHeader)}
+                            />
+                            <label htmlFor={`checkbox-${index}`} style={{ marginLeft: 4 }}>{col.ColumnHeader}</label>
+                          </div>
+                          <button
+                            onClick={() => togglePin(col.ColumnHeader)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            {col.isFreeze ? (
+                              pinnedColumns[col.ColumnHeader] ? <LuPin /> : <RiPushpinFill />
+                            ) : (
+                              pinnedColumns[col.ColumnHeader] ? <RiPushpinFill /> : <LuPin />
+                            )}
+                          </button>
                         </div>
+
                       ))}
                     </div>
                   </div>
