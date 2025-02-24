@@ -17,6 +17,8 @@ import '../CustomComponent/Components.css';
 import '../CustomComponent/Style.css';
 import { TbBackground, TbReload } from 'react-icons/tb';
 import { TiArrowLeftThick, TiArrowRightThick } from 'react-icons/ti';
+import { LuPin } from 'react-icons/lu';
+import { RiPushpinFill, RiPushpinLine } from 'react-icons/ri';
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -105,16 +107,19 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     .filter(col => col.isVisible && !col.isFreeze)
     .sort((a, b) => a.ColumnOrder - b.ColumnOrder);
 
+
+
   useEffect(() => {
     if (columnFilterVisible) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [columnFilterVisible]);
+
+
+
 
   useEffect(() => {
     handlefiltersearch();
@@ -397,6 +402,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));
   };
 
+
   const handleClickOutside = (event: MouseEvent) => {
     if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
       setColumnFilterVisible(null);
@@ -473,26 +479,20 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const handleFilterConditionChange = (column: string, condition: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [column]: {
-        ...prevFilters[column],
-        condition: condition,
-      },
+      [column]: { ...prevFilters[column], condition },
     }));
   };
 
-  const handleFilterInputChange = (column: string, value: any) => {
-    console.log("Column and Valur ", column, value);
-
+  const handleFilterInputChange = (column: string, value: string) => {
     setFilters((prevFilters) => ({
       ...prevFilters,
-      [column]: {
-        ...prevFilters[column],
-        value: value,
-      },
+      [column]: { ...prevFilters[column], value },
     }));
   };
 
+
   const renderFilterInput = (dataType: string, column: string) => {
+    const filterValue = filters[column]?.value ?? "";
     switch (dataType) {
       case 'string':
         return (
@@ -501,7 +501,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <input
                 type="text"
                 className="search-input2"
-                value={''}
+                value={filterValue}
                 disabled
                 placeholder="No value"
               />
@@ -509,6 +509,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <input
                 type="text"
                 className="search-input2"
+                value={filterValue}
                 onChange={(e) => handleFilterInputChange(column, e.target.value)}
                 placeholder="Does not contain"
               />
@@ -516,6 +517,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <input
                 type="text"
                 className="search-input2"
+                value={filterValue}
                 onChange={(e) => handleFilterInputChange(column, e.target.value)}
                 placeholder="Search"
               />
@@ -531,6 +533,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 <input
                   type="number"
                   className="search-input2"
+                  value={filters[column]?.value?.min ?? ""}
                   onChange={(e) =>
                     setFilters((prev) => ({
                       ...prev,
@@ -545,6 +548,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 <input
                   type="number"
                   className="search-input2"
+                  value={filters[column]?.value?.max ?? ""}
                   onChange={(e) =>
                     setFilters((prev) => ({
                       ...prev,
@@ -561,6 +565,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <input
                 type="text"
                 className="search-input2"
+                value={filterValue}
                 onChange={(e) => handleFilterInputChange(column, e.target.value)}
                 placeholder="Search"
               />
@@ -577,7 +582,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 <input
                   type="date"
                   className="DatePicker-custom"
-                  value={filters[column]?.value?.startDate ? filters[column]?.value?.startDate.toISOString().split("T")[0] : ""}
+                  value={filters[column]?.value?.startDate?.toISOString().split("T")[0] ?? ""}
                   onChange={(e) => {
                     const newDate = e.target.value ? new Date(e.target.value) : null;
                     setFilters((prev) => ({
@@ -593,7 +598,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 <input
                   type="date"
                   className="DatePicker-custom"
-                  value={filters[column]?.value?.endDate ? filters[column]?.value?.endDate.toISOString().split("T")[0] : ""}
+                  value={filters[column]?.value?.endDate?.toISOString().split("T")[0] ?? ""}
                   onChange={(e) => {
                     const newDate = e.target.value ? new Date(e.target.value) : null;
                     setFilters((prev) => ({
@@ -613,7 +618,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 id="date"
                 name="date"
                 className="DatePicker-custom"
-                value={filters[column]?.value ? filters[column]?.value.toISOString().split("T")[0] : ""}
+                value={filterValue ? new Date(filterValue).toISOString().split("T")[0] : ""}
                 onChange={(e: any) => {
                   const newDate = e.target.value ? new Date(e.target.value) : null;
                   setFilters((prev) => ({
@@ -634,6 +639,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
           <select
             className="search-input2"
             onChange={(e: any) => handleFilterInputChange(column, e.target.value)}
+            value={filterValue}
           >
             <option value="">Select</option>
             {distinctValues.map((val: any, idx: number) => {
@@ -819,8 +825,24 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     return 30 + frozenColumns.slice(0, index).reduce((acc, curr) => acc + curr.Width + 8, 0);
   };
 
+  const [pinnedColumns, setPinnedColumns] = useState<{ [key: string]: boolean }>({});
+
+  const togglePin = (columnHeader: string) => {
+    setPinnedColumns((prev) => ({
+      ...prev,
+      [columnHeader]: !prev[columnHeader],
+    }));
+    
+    setVisibleColumns((prevColumns: any) =>
+      prevColumns.map((col: any) =>
+        col.ColumnHeader === columnHeader
+          ? { ...col, isFreeze: !col.isFreeze }
+          : col
+      )
+    );
+  };
   return (
-    <div className="card" style={{ background: "#fcfefe" }}>
+    <div className="main-card-container">
 
       {showActionPopup.Add && (
         <div
@@ -832,7 +854,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
           }}
         >
           <div style={styles.popup} onClick={(e) => e.stopPropagation()}>
-            <div className="column-inputs-container" style={{ marginTop: '2px' }}>
+            <div className="column-inputs-container">
               <span className="popup-ActionTitle">Add New :</span>
               <hr />
               <div className="popup-mainconatiner">
@@ -894,13 +916,17 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 ))}
               </div>
 
-              <div style={{ float: 'right' }}>
-                <button onClick={handleActionAddButtonclose} style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}} className="popup-ActionButton">
+              <div className="popup-button-container">
+                <button onClick={handleActionAddButtonclose} className="popup-ActionButton"
+                  style={{
+                    background: settings.background || 'whitesmoke',
+                    color: settings.color || 'black'
+                  }} >
                   Close
                 </button>
                 <button
                   onClick={handleAddSubmit}
-                  style={{ marginLeft: 10,background: settings.background || 'whitesmoke', color: settings.color || 'black' }}
+                  style={{ marginLeft: 10, background: settings.background || 'whitesmoke', color: settings.color || 'black' }}
                   className="popup-ActionButton"
                 >
                   Submit
@@ -921,7 +947,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
           }}
         >
           <div style={styles.popup} onClick={(e: any) => e.stopPropagation()}>
-            <div className="column-inputs-container" style={{ marginTop: '2px' }}>
+            <div className="column-inputs-container">
               <span className="popup-ActionTitle">Edit Record:</span>
               <hr />
               <div className="popup-mainconatiner">
@@ -993,18 +1019,18 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 ))}
               </div>
 
-              <div style={{ float: "right" }}>
+              <div className="popup-button-container" >
                 <button
                   onClick={handleActionEditButtonclose}
                   className="popup-ActionButton"
-                  style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}}
+                  style={{ background: settings.background || 'whitesmoke', color: settings.color || 'black' }}
                 >
                   Close
                 </button>
                 <button
                   onClick={handleEditSubmit}
                   className="popup-ActionButton"
-                  style={{ marginLeft: 10 ,background: settings.background || 'whitesmoke', color: settings.color || 'black'}}
+                  style={{ marginLeft: 10, background: settings.background || 'whitesmoke', color: settings.color || 'black' }}
                 >
                   Submit
                 </button>
@@ -1022,14 +1048,14 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
             }
           }}>
           <div style={styles.deletePopup} onClick={(e: any) => e.stopPropagation()} >
-            <div className="column-inputs-container" style={{ marginTop: '15px' }}>
+            <div className="column-inputs-delete-container">
               <span className='popup-ActionTitle'>Are you sure you want to delete this item ?</span>
 
-              <div style={{ display: "flex", justifyContent: "end" }}>
-                <button onClick={handleActionDeleteButtonClose} style={{background: settings.background || 'whitesmoke', color: settings.color || 'black'}} className='popup-ActionButton'>
+              <div className="popup-button-delete-container" >
+                <button onClick={handleActionDeleteButtonClose} style={{ background: settings.background || 'whitesmoke', color: settings.color || 'black' }} className='popup-ActionButton'>
                   Close
                 </button>
-                <button style={{ marginLeft: 10,background: settings.background || 'whitesmoke', color: settings.color || 'black' }} className='popup-ActionButton' onClick={() => {
+                <button style={{ marginLeft: 10, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} className='popup-ActionButton' onClick={() => {
                   selectedRows.forEach((id) => handleDelete(id));
                 }} >
                   Submit
@@ -1143,15 +1169,33 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                     <div className='inner-column-visibility' style={{ maxheight: "255px", overflowY: "scroll" }}>
 
                       {listViewColumns.map((col: any, index: number) => (
-                        <div key={index} className="checkbox-container" style={{ fontSize: 13 }}>
-                          <input
-                            type="checkbox"
-                            id={`checkbox-${index}`}
-                            checked={visibleColumns.find((visibleCol: any) => visibleCol.ColumnHeader === col.ColumnHeader)?.isVisible}
-                            onChange={() => handleColumnVisibilityChange(col.ColumnHeader)}
-                          />
-                          <label htmlFor={`checkbox-${index}`}>{col.ColumnHeader}</label>
+                        <div
+                          key={index}
+                          className="checkbox-container"
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13 }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <input
+                              type="checkbox"
+                              id={`checkbox-${index}`}
+                              checked={visibleColumns.find((visibleCol: any) => visibleCol.ColumnHeader === col.ColumnHeader)?.isVisible}
+                              onChange={() => handleColumnVisibilityChange(col.ColumnHeader)}
+                            />
+                            <label htmlFor={`checkbox-${index}`} style={{ marginLeft: 4 }}>{col.ColumnHeader}</label>
+                          </div>
+                          <button
+                            onClick={() => togglePin(col.ColumnHeader)}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                          >
+                            {col.isFreeze ? (
+                              pinnedColumns[col.ColumnHeader] ? <LuPin /> : <RiPushpinFill />
+                            ) : (
+                              pinnedColumns[col.ColumnHeader] ? <RiPushpinFill /> : <LuPin />
+                            )}
+                          </button>
+
                         </div>
+
                       ))}
                     </div>
                   </div>
@@ -1163,15 +1207,16 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
         <div className='form-group'
           style={{
             background: "white",
-            border: "1px solidrgb(32, 32, 32)",
+            border: "1px solid rgb(184, 184, 184)",
             overflow: 'visible'
           }}
           ref={filterDropdownRef}>
-          <div classname="clsmainheaderrow" style={{ overflowY: 'auto', position: 'relative', height: '100%' }}>
+          <div classname="clsmainheaderrow" style={{ overflowY: "scroll", position: 'relative', height: '100%' }}>
             <table cellPadding="5" className="custom-grid" style={{ borderCollapse: 'collapse' }}>
-              <thead className="custom-grid-header" style={{ top: 0, zIndex: 10, background: 'white' }}>
+              <thead className="custom-grid-header"  >
                 <tr>
-                  <th className="sticky-column" style={{ width: 25, position: 'sticky', left: 0, top: '-2px', zIndex: 111, background: settings.background || "whitesmoke" }}>
+                  <th className="sticky-column"
+                    style={{ background: settings.background || "whitesmoke" }}>
                     <input type="checkbox" checked={isSelectAllChecked} onChange={handleSelectAllChange} />
                   </th>
                   {[...frozenColumns, ...nonFrozenColumns].map((col) => (
@@ -1201,24 +1246,30 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         <button className="btnfilter" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleFilterClick(col.ColumnHeader)}>
                           <BsThreeDotsVertical />
                         </button>
-                        {columnFilterVisible === col.ColumnHeader && (
-                          <div className="column-visibilityy">
-                            <div className="search-bar2" style={{ margin: '5px' }}>
-                              <div ref={filterDropdownRef} className="filter-dropdown">
-                                <div className="select-container">
-                                  <select onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)} className="autocomplete-input2" defaultValue="">
-                                    <option value="" disabled>Select Filter</option>
-                                    {renderFilterOptions(col.DataType)}
-                                  </select>
+                        {
+                          columnFilterVisible === col.ColumnHeader && (
+                            <div className="column-visibilityy">
+                              <div className="search-bar2" style={{ margin: '5px' }}>
+                                <div ref={filterDropdownRef} className="filter-dropdown">
+                                  <div className="select-container">
+                                    <select
+                                      value={filters[col.ColumnHeader]?.condition || ""}
+                                      onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)}
+                                      className="autocomplete-input2"
+                                    >
+                                      <option value="" disabled>Select Filter</option>
+                                      {renderFilterOptions(col.DataType)}
+                                    </select>
+                                  </div>
+                                  {renderFilterInput(col.DataType, col.ColumnHeader)}
+                                  <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }} onClick={handleclearfilter}>
+                                    <TbReload />
+                                  </button>
                                 </div>
-                                {renderFilterInput(col.DataType, col.ColumnHeader)}
-                                <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }} onClick={handleclearfilter}>
-                                  <TbReload />
-                                </button>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          )
+                        }
                       </div>
                     </th>
                   ))}
