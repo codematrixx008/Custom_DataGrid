@@ -917,11 +917,13 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               </div>
 
               <div className="popup-button-container">
+
                 <button onClick={handleActionAddButtonclose} className="popup-ActionButton"
                   style={{
                     background: settings.background || 'whitesmoke',
                     color: settings.color || 'black'
                   }} >
+
                   Close
                 </button>
                 <button
