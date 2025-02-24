@@ -1049,11 +1049,14 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
       <div className="grid-main-container">
         <div className="headingbox">
-          <span style={{ color: "#085a99" }}
-            className='table-title'><h2>{title}</h2></span>
+
+          <div className='table-title'>
+              <h2>{title}</h2>
+          </div>
+
           <div className="actions-container">
             {settings.isGlobalSearchVisible && (
-              <div className="search-box" style={{ position: "relative" }}>
+              <div className="search-box">
                 <input
                   type="text"
                   placeholder="Search..."
@@ -1066,18 +1069,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                     type="button"
                     onClick={handleClearSearch}
                     className="clear-button"
-                    style={{
-                      position: "absolute",
-                      right: "10px",
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      fontSize: "14px"
-                    }}
                   >
-                    <b>×</b>
+                    <b>x</b>
                   </button>
                 )}
               </div>
@@ -1140,16 +1133,16 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               )}
 
 
-              <div style={{ position: 'relative', display: 'inline-block' }}>
+              <div className="column-control-panel">
                 {settings.IsButtonVisible.ShowHideColumns && (
                   <button onClick={handlecolumnvisiblepopup} className='table-actionbtn' disabled={!settings.IsButtonEnabled.ShowHideColumns} title='ShowHideColumns' >&#9776;</button>
                 )}
                 {showColumnVisiblePopUp &&
-                  <div ref={popupColumnRef} className="column-visibility" style={{ padding: "10px 0px" }}>
-                    <div className='inner-column-visibility' style={{ maxheight: "255px", overflowY: "scroll" }}>
+                  <div ref={popupColumnRef} className="column-visibility-container" >
+                    <div className='inner-column-visibility' >
 
                       {listViewColumns.map((col: any, index: number) => (
-                        <div key={index} className="checkbox-container" style={{ fontSize: 13 }}>
+                        <div key={index} className="checkbox-container">
                           <input
                             type="checkbox"
                             id={`checkbox-${index}`}
@@ -1166,15 +1159,10 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
             </div>
           </div>
         </div>
-        <div className='form-group'
-          style={{
-            background: "white",
-            border: "1px solid rgb(184, 184, 184)",
-            overflow: 'visible'
-          }}
-          ref={filterDropdownRef}>
-          <div classname="clsmainheaderrow" style={{ overflowY: "scroll", position: 'relative', height: '100%' }}>
-            <table cellPadding="5" className="custom-grid" style={{ borderCollapse: 'collapse' }}>
+        <div className='table-main-container' ref={filterDropdownRef}>
+          <div className="table-main-box" 
+          >
+            <table cellPadding="5" className="custom-grid">
               <thead className="custom-grid-header"  >
                 <tr>
                   <th className="sticky-column"
@@ -1200,8 +1188,9 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         top: '-2px',
                       }}
                     >
-                      <span style={{ position: 'absolute', marginTop: '2px' }}>{col.ColumnHeader}</span>
-                      <div style={{ display: 'inline-block', float: 'right' }}>
+                      <span className="table-columnHeader-name" >{col.ColumnHeader} </span>
+
+                      <div className="columnHeader-filters-btn-container" >
                         <button className="btnsort" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleSortClick(col.ColumnHeader)}>
                           <BiSortAlt2 />
                         </button>
@@ -1210,9 +1199,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         </button>
                         {
                           columnFilterVisible === col.ColumnHeader && (
-                            <div className="column-visibilityy">
-                              <div className="search-bar2" style={{ margin: '5px' }}>
-                                <div ref={filterDropdownRef} className="filter-dropdown">
+                            <div className="column-header-filters-box">
+                                <div ref={filterDropdownRef} className="column-filters-dropdown">
                                   <div className="select-container">
                                     <select
                                       value={filters[col.ColumnHeader]?.condition || ""}
@@ -1224,11 +1212,10 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                                     </select>
                                   </div>
                                   {renderFilterInput(col.DataType, col.ColumnHeader)}
-                                  <button className="search-button" style={{ color: "black", backgroundColor: "white", fontSize: 17 }} onClick={handleclearfilter}>
+                                  <button className="clear-input-button" onClick={handleclearfilter}>
                                     <TbReload />
                                   </button>
                                 </div>
-                              </div>
                             </div>
                           )
                         }
@@ -1260,6 +1247,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                         }}
                         onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                       >
+                      
                         {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
                           col.DataType === 'string' ? (
                             <input type="text" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
