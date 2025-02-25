@@ -214,7 +214,7 @@
 .inner-column-visibility .checkbox-container {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: space-between;
     padding: 2px 4px;
     font-size: 13px;
 }
@@ -1141,7 +1141,10 @@ select.autocomplete-inputs {
     color: #383838;
 }
 
-
+svg.lucide {
+    height: 15px !important;
+    width: 15px !important;
+}
 
 /* Responsive code */
 @media (max-width: 768px) {

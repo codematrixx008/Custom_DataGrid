@@ -1,24 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BsFiletypeCsv, BsFiletypePdf, BsFiletypeXls, BsThreeDotsVertical } from "react-icons/bs";
-import { GrDocumentCsv } from "react-icons/gr";
-import { AiOutlineDelete } from "react-icons/ai";
-import { IoMdAdd } from "react-icons/io";
-import { CiEdit } from "react-icons/ci";
-import { BiLastPage, BiSortAlt2 } from "react-icons/bi";
-import { BiFirstPage } from "react-icons/bi";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { FaCalendar, FaFileCsv } from "react-icons/fa";
 import '../CustomComponent/Components.css';
 import '../CustomComponent/Style.css';
-import { TbBackground, TbReload } from 'react-icons/tb';
-import { TiArrowLeftThick, TiArrowRightThick } from 'react-icons/ti';
 import { LuPin } from 'react-icons/lu';
-import { RiPushpinFill, RiPushpinLine } from 'react-icons/ri';
+import { LucidePinOff, LucidePin, Plus, FilePenLine, Trash, ArrowDownUp, EllipsisVertical, RotateCcw, ChevronFirst, ChevronLast, ChevronLeft, ChevronRight, FileText } from "lucide-react";
+
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
@@ -73,7 +64,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const [pageSize, setPageSize] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  const [sortedData, setSortedData] = useState([]);
+  const [sortedData, setSortedData] = useState<any[]>([]);
   const [selectedsortedData, setSelectedSortedData] = useState(data);
   const totalPages = Math.ceil(sortedData.length / pageSize);
   const startIndex = (currentPage - 1) * rowsPerPage;
@@ -99,15 +90,14 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const isSelectAllChecked = selectedRows.length === paginatedData.length && paginatedData.length > 0;
   const filterDropdownRef = useRef<HTMLDivElement>(null);
   const popupColumnRef = useRef<HTMLDivElement>(null);
-  const frozenColumns = visibleColumns
-    .filter(col => col.isVisible && col.isFreeze)
-    .sort((a, b) => a.ColumnOrder - b.ColumnOrder);
+  const frozenColumns = (visibleColumns as any[])
+    .filter((col: any) => col?.isVisible && col?.isFreeze)
+    .sort((a: any, b: any) => a?.ColumnOrder - b?.ColumnOrder);
 
-  const nonFrozenColumns = visibleColumns
-    .filter(col => col.isVisible && !col.isFreeze)
-    .sort((a, b) => a.ColumnOrder - b.ColumnOrder);
-
-
+  const nonFrozenColumns = (visibleColumns as any[])
+    .filter((col: any) => col?.isVisible && !col?.isFreeze)
+    .sort((a: any, b: any) => a?.ColumnOrder - b?.ColumnOrder);
+  const [pinnedColumns, setPinnedColumns] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (columnFilterVisible) {
@@ -118,25 +108,16 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [columnFilterVisible]);
 
-
-
-
   useEffect(() => {
     handlefiltersearch();
-
   }, [filters]);
 
-  const formatDate = (date, targetFormat) => {
+  const formatDate = (date: any, targetFormat: any): any => {
     if (!date || !targetFormat) return date;
-
-    // Handle both "-" and "/" as separators
     const parts = date.split(/[-/]/);
     if (parts.length !== 3 || parts.some(isNaN)) return date;
-
     let [year, month, day] =
-      date.includes("/") ? [parts[2], parts[0], parts[1]] : [parts[2], parts[0], parts[1]]; // Default MM-DD-YYYY
-
-    // Convert based on target format
+      date.includes("/") ? [parts[2], parts[0], parts[1]] : [parts[2], parts[0], parts[1]];
     switch (targetFormat) {
       case "MM-DD-YYYY":
         return `${month}-${day}-${year}`;
@@ -151,33 +132,28 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
       case "DD/MM/YYYY":
         return `${day}/${month}/${year}`;
       default:
-        return date; // Return original if format is unknown
+        return date;
     }
   };
 
   useEffect(() => {
     if (!data || !settings?.dateFormat) return;
-
     setSortedData(
-      data.map((item) => {
-
+      data.map((item: any) => {
         let formattedItem = { ...item };
-        listViewColumns.forEach(({ ColumnHeader, DataType }) => {
+        listViewColumns.forEach(({ ColumnHeader, DataType }: any) => {
           if (DataType === "date" && item[ColumnHeader]) {
             formattedItem[ColumnHeader] = formatDate(item[ColumnHeader], settings.dateFormat);
           }
         });
         return formattedItem;
-
       })
     );
   }, [data, settings]);
 
   useEffect(() => {
     if (showActionPopup.Edit && selectedRows !== null && data && listViewColumns) {
-
       const selectedRowData = data.find((row: any) => row.id === selectedRows[0]);
-
       if (selectedRowData) {
         const updatedInputValues: { [key: string]: any } = {};
         listViewColumns.forEach((col: any) => {
@@ -205,8 +181,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     setTooltip({ ...tooltip, visible: false });
   };
 
-  const handleInputChange = (columnHeader: string, value: string) => {
-    setInputValues((prev) => ({
+  const handleInputChange = (columnHeader: string, value: any) => {
+    setInputValues((prev: any) => ({
       ...prev,
       [columnHeader]: value
     }));
@@ -220,14 +196,13 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const handleAddSubmit = () => {
     const newRow = { id: Date.now(), ...inputValues };
     setSortedData((prevData) => [...prevData, newRow]);
-    console.log("New Data Added:", newRow);
     setInputValues({});
     handleActionAddButtonclose();
   };
 
-  const handleEditSubmit = () => {
-    if (showActionPopup.Edit) {
-      const updatedData = sortedData.map((row) => {
+  const handleEditSubmit = (): void => {
+    if (showActionPopup?.Edit) {
+      const updatedData = (sortedData as any[]).map((row: any) => {
         if (row.id === selectedRows[0]) {
           return { ...row, ...inputValues };
         }
@@ -235,7 +210,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
       });
       setSortedData(updatedData);
     }
-    setInputValues({});
+    setInputValues({} as any);
     handleActionEditButtonclose(); // Close modal after submission
   };
 
@@ -319,14 +294,14 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const exportToCSV = () => {
     const csvRows: string[] = [];
     const dataToExport = getSelectedExportData();
-    const headers = visibleColumns
-      .filter(col => col.isVisible)
-      .map(col => `"${col.ColumnHeader}"`);
+    const headers = (visibleColumns as any[])
+      .filter((col: any) => col?.isVisible)
+      .map((col: any) => `"${col?.ColumnHeader}"`);
     csvRows.push(headers.join(','));
     dataToExport.forEach(row => {
       const values = visibleColumns
-        .filter(col => col.isVisible)
-        .map(col => {
+        .filter((col: any) => col.isVisible)
+        .map((col: any) => {
           let value = formatData(row[col.ColumnHeader], col.DataType);
           return `"${value !== null && value !== undefined ? value : ''}"`; // Handle null values
         });
@@ -340,12 +315,12 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const exportToExcel = () => {
     const dataToExport = getSelectedExportData();
     const headers = visibleColumns
-      .filter(col => col.isVisible)
-      .map(col => col.ColumnHeader);
+      .filter((col: any) => col.isVisible)
+      .map((col: any) => col.ColumnHeader);
     const data = dataToExport.map(row =>
       visibleColumns
-        .filter(col => col.isVisible)
-        .reduce((acc, col) => {
+        .filter((col: any) => col.isVisible)
+        .reduce((acc: any, col: any) => {
           acc[col.ColumnHeader] = formatData(row[col.ColumnHeader], col.DataType);
           return acc;
         }, {} as Record<string, any>)
@@ -359,18 +334,16 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
   const exportToPDF = () => {
     const dataToExport = getSelectedExportData();
-
     const doc = new jsPDF({ orientation: "landscape", putOnlyUsedFonts: true, format: "a3" });
 
+    const headers = (visibleColumns as any[])
+      .filter((col: any) => col?.isVisible)
+      .map((col: any) => col?.ColumnHeader);
 
-    const headers = visibleColumns
-      .filter(col => col.isVisible)
-      .map(col => col.ColumnHeader);
-
-    const data = dataToExport.map(row =>
-      visibleColumns
-        .filter(col => col.isVisible)
-        .map(col => formatData(row[col.ColumnHeader], col.DataType))
+    const data = (dataToExport as any[]).map((row: any) =>
+      (visibleColumns as any[])
+        .filter((col: any) => col?.isVisible)
+        .map((col: any) => formatData(row[col?.ColumnHeader], col?.DataType))
     );
 
     doc.text(title, 14, 10);
@@ -401,7 +374,6 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const handleFilterClick = (columnHeader: string) => {
     setColumnFilterVisible((prev) => (prev === columnHeader ? null : columnHeader));
   };
-
 
   const handleClickOutside = (event: MouseEvent) => {
     if (filterDropdownRef.current && !filterDropdownRef.current.contains(event.target as Node)) {
@@ -489,7 +461,6 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
       [column]: { ...prevFilters[column], value },
     }));
   };
-
 
   const renderFilterInput = (dataType: string, column: string) => {
     const filterValue = filters[column]?.value ?? "";
@@ -793,19 +764,21 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
   const handleActionDeleteButtonClose = () => {
     setShowActionPopup((prev) => ({ ...prev, Delete: false }));
   };
+
   const handleDoubleClick = (rowId: number, ColumnHeader: string) => {
     setEditCell({ rowId, ColumnHeader });
   };
 
-  const handleEditableInput = (ColumnHeader: string, value: any) => {
-    const updatedData = sortedData.map((row) => {
+  const handleEditableInput = (ColumnHeader: string, value: any): void => {
+    const updatedData = (sortedData as any[]).map((row: any) => {
       if (row.id === editCell?.rowId) {
         return { ...row, [ColumnHeader]: value };
       }
       return row;
     });
+
     setSortedData(updatedData);
-    setEditCell(null)
+    setEditCell(null);
   };
 
   const handlePageSizeChange = (newSize: number) => {
@@ -813,26 +786,17 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
     setCurrentPage(1);
   };
 
-  const CustomInput = ({ value, onClick }: any) => (
-    <div className="custom-date-picker" onClick={onClick}>
-      <input value={value} readOnly placeholder="Select" />
-      <FaCalendar />
-    </div>
-  );
-
-  const calculateLeftOffset = (col) => {
+  const calculateLeftOffset = (col: any) => {
     const index = frozenColumns.findIndex(fCol => fCol.ColumnHeader === col.ColumnHeader);
     return 30 + frozenColumns.slice(0, index).reduce((acc, curr) => acc + curr.Width + 8, 0);
   };
-
-  const [pinnedColumns, setPinnedColumns] = useState<{ [key: string]: boolean }>({});
 
   const togglePin = (columnHeader: string) => {
     setPinnedColumns((prev) => ({
       ...prev,
       [columnHeader]: !prev[columnHeader],
     }));
-    
+
     setVisibleColumns((prevColumns: any) =>
       prevColumns.map((col: any) =>
         col.ColumnHeader === columnHeader
@@ -841,6 +805,30 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
       )
     );
   };
+
+  const [columnOrder, setColumnOrder] = useState(
+    [...frozenColumns, ...nonFrozenColumns].map((col) => col.ColumnHeader)
+  );
+
+  const getReorderedColumns = (order) => {
+    const allColumns = [...frozenColumns, ...nonFrozenColumns];
+    const reordered = order.map((header) => allColumns.find((col) => col.ColumnHeader === header));
+    return {
+      frozen: reordered.filter((col) => col.isFreeze),
+      nonFrozen: reordered.filter((col) => !col.isFreeze),
+    };
+  };
+
+  const handleColumnDrop = (draggedIndex, targetIndex) => {
+    if (draggedIndex === targetIndex) return;
+    const updatedOrder = [...columnOrder];
+    const [moved] = updatedOrder.splice(draggedIndex, 1);
+    updatedOrder.splice(targetIndex, 0, moved);
+    setColumnOrder(updatedOrder);
+  };
+
+  const { frozen: reorderedFrozenColumns, nonFrozen: reorderedNonFrozenColumns } = getReorderedColumns(columnOrder);
+
   return (
     <div className="main-card-container">
 
@@ -1071,9 +1059,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
 
       <div className="grid-main-container">
         <div className="headingbox">
-
           <div className='table-title'>
-              <h2>{title}</h2>
+            <h2>{title}</h2>
           </div>
 
           <div className="actions-container">
@@ -1105,7 +1092,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   disabled={!settings.IsButtonEnabled.Add}
                   onClick={handleActionAddButton}
                   title='Add'>
-                  <IoMdAdd />
+                  <Plus />
                 </button>
               )}
 
@@ -1114,7 +1101,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   disabled={!isAnyRowSelected || !settings.IsButtonEnabled.Edit || selectedRows.length > 1}
                   title='Edit'
                   onClick={handleActionEditButton}>
-                  <CiEdit />
+                  <FilePenLine />
                 </button>
               )}
 
@@ -1123,7 +1110,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   disabled={!isAnyRowSelected || !settings.IsButtonEnabled.Delete}
                   title='Delete'
                   onClick={handleActionDeleteButton}>
-                  <AiOutlineDelete />
+                  <Trash />
                 </button>
               )}
 
@@ -1132,7 +1119,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   onClick={exportToCSV}
                   disabled={!settings.IsButtonEnabled.CSV}
                   title='CSV'>
-                  <BsFiletypeCsv />
+                  <FileText />
                 </button>
               )}
 
@@ -1141,7 +1128,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   onClick={exportToExcel}
                   disabled={!settings.IsButtonEnabled.XLSX}
                   title='XLSX'>
-                  <BsFiletypeXls />
+                  <FileText />
                 </button>
               )}
 
@@ -1150,7 +1137,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   onClick={exportToPDF}
                   disabled={!settings.IsButtonEnabled.PDF}
                   title='PDF'>
-                  <BsFiletypePdf />
+                  <FileText />
                 </button>
               )}
 
@@ -1182,9 +1169,9 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                           >
                             {col.isFreeze ? (
-                              pinnedColumns[col.ColumnHeader] ? <LuPin /> : <RiPushpinFill />
+                              pinnedColumns[col.ColumnHeader] ? <LucidePinOff /> : <LucidePin />
                             ) : (
-                              pinnedColumns[col.ColumnHeader] ? <RiPushpinFill /> : <LuPin />
+                              pinnedColumns[col.ColumnHeader] ? <LucidePin /> : <LucidePinOff />
                             )}
                           </button>
                         </div>
@@ -1198,65 +1185,99 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
           </div>
         </div>
         <div className='table-main-container' ref={filterDropdownRef}>
-          <div className="table-main-box" 
+          <div className="table-main-box"
           >
             <table cellPadding="5" className="custom-grid">
-              <thead className="custom-grid-header"  >
+              <thead className="custom-grid-header">
                 <tr>
-                  <th className="sticky-column"
-                    style={{ background: settings.background || "whitesmoke" }}>
-                    <input type="checkbox" checked={isSelectAllChecked} onChange={handleSelectAllChange} />
+                  <th
+                    className="sticky-column"
+                    style={{ background: settings.background || "whitesmoke", left: 0, zIndex: 120 }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelectAllChecked}
+                      onChange={handleSelectAllChange}
+                    />
                   </th>
-                  {[...frozenColumns, ...nonFrozenColumns].map((col) => (
+                  {[...reorderedFrozenColumns, ...reorderedNonFrozenColumns].map((col, index) => (
                     <th
                       key={col.ColumnHeader}
-                      className={`th-tab sticky-columns ${col.isFreeze ? 'sticky-column' : ''}`}
+                      className={`th-tab sticky-columns ${col.isFreeze ? "sticky-column" : ""}`}
+                      draggable
                       title={col.ColumnHeader}
+                      onDragStart={(e) => e.dataTransfer.setData("dragIndex", index.toString())}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        const draggedIndex = parseInt(e.dataTransfer.getData("dragIndex"), 10);
+                        handleColumnDrop(draggedIndex, index);
+                      }}
                       style={{
                         textAlign: "left",
                         minWidth: `${col.Width}px`,
-                        fontSize: settings.fontSize ? `${settings.fontSize}px` : '13px',
-                        fontFamily: settings.fontFamily || 'Arial, sans-serif',
-                        color: settings.color || 'black',
-                        background: settings.background || 'whitesmoke',
-                        // position: col.isFreeze ? 'sticky' : 'static',
-                        left: col.isFreeze ? `${calculateLeftOffset(col)}px` : undefined,
+                        fontSize: settings.fontSize ? `${settings.fontSize}px` : "13px",
+                        fontFamily: settings.fontFamily || "Arial, sans-serif",
+                        color: settings.color || "black",
+                        background: settings.background || "whitesmoke",
+                        left: col.isFreeze
+                          ? `${calculateLeftOffset(col) ?? reorderedFrozenColumns
+                            .slice(0, reorderedFrozenColumns.findIndex((c) => c.ColumnHeader === col.ColumnHeader))
+                            .reduce((acc, curr) => acc + curr.Width + 8, 0)}px`
+                          : undefined,
+                        position: col.isFreeze ? "sticky" : "static",
                         zIndex: col.isFreeze ? 110 : 1,
-                        whiteSpace: 'nowrap',
-                        top: '-2px',
+                        whiteSpace: "nowrap",
+                        cursor: "move",
+                        top: "-2px",
                       }}
                     >
-                      <span className="table-columnHeader-name" >{col.ColumnHeader} </span>
+                      <span className="table-columnHeader-name">{col.ColumnHeader}</span>
 
-                      <div className="columnHeader-filters-btn-container" >
-                        <button className="btnsort" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleSortClick(col.ColumnHeader)}>
-                          <BiSortAlt2 />
+                      <div className="columnHeader-filters-btn-container">
+                        <button
+                          className="btnsort"
+                          style={{
+                            border: `1px solid ${settings.background || "whitesmoke"}`,
+                            background: settings.background || "whitesmoke",
+                            color: settings.color || "black",
+                          }}
+                          onClick={() => handleSortClick(col.ColumnHeader)}
+                        >
+                          <ArrowDownUp />
                         </button>
-                        <button className="btnfilter" style={{ border: `1px solid ${settings.background || 'whitesmoke'}`, background: settings.background || 'whitesmoke', color: settings.color || 'black' }} onClick={() => handleFilterClick(col.ColumnHeader)}>
-                          <BsThreeDotsVertical />
+                        <button
+                          className="btnfilter"
+                          style={{
+                            border: `1px solid ${settings.background || "whitesmoke"}`,
+                            background: settings.background || "whitesmoke",
+                            color: settings.color || "black",
+                          }}
+                          onClick={() => handleFilterClick(col.ColumnHeader)}
+                        >
+                          <EllipsisVertical />
                         </button>
-                        {
-                          columnFilterVisible === col.ColumnHeader && (
-                            <div className="column-header-filters-box">
-                                <div ref={filterDropdownRef} className="column-filters-dropdown">
-                                  <div className="select-container">
-                                    <select
-                                      value={filters[col.ColumnHeader]?.condition || ""}
-                                      onChange={(e) => handleFilterConditionChange(col.ColumnHeader, e.target.value)}
-                                      className="autocomplete-input2"
-                                    >
-                                      <option value="" disabled>Select Filter</option>
-                                      {renderFilterOptions(col.DataType)}
-                                    </select>
-                                  </div>
-                                  {renderFilterInput(col.DataType, col.ColumnHeader)}
-                                  <button className="clear-input-button" onClick={handleclearfilter}>
-                                    <TbReload />
-                                  </button>
-                                </div>
+                        {columnFilterVisible === col.ColumnHeader && (
+                          <div className="column-header-filters-box">
+                            <div ref={filterDropdownRef} className="column-filters-dropdown">
+                              <div className="select-container">
+                                <select
+                                  value={filters[col.ColumnHeader]?.condition || ""}
+                                  onChange={(e) =>
+                                    handleFilterConditionChange(col.ColumnHeader, e.target.value)
+                                  }
+                                  className="autocomplete-input2"
+                                >
+                                  <option value="" disabled>Select Filter</option>
+                                  {renderFilterOptions(col.DataType)}
+                                </select>
+                              </div>
+                              {renderFilterInput(col.DataType, col.ColumnHeader)}
+                              <button className="clear-input-button" onClick={handleclearfilter}>
+                                <RotateCcw />
+                              </button>
                             </div>
-                          )
-                        }
+                          </div>
+                        )}
                       </div>
                     </th>
                   ))}
@@ -1265,32 +1286,42 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               <tbody className="custom-grid-body">
                 {paginatedData.map((row, rowIndex) => (
                   <tr key={row.id} className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}>
-                    <td className="sticky-column" style={{ position: 'sticky', left: 0, zIndex: 103 }}>
-                      <input type="checkbox" checked={selectedRows.includes(row.id)} onChange={() => handleCheckboxChange(row.id)} />
+                    <td
+                      className="sticky-column"
+                      style={{ position: "sticky", left: 0, background: settings.background || "whitesmoke", zIndex: 120 }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row.id)}
+                        onChange={() => handleCheckboxChange(row.id)}
+                      />
                     </td>
-                    {[...frozenColumns, ...nonFrozenColumns].map((col) => (
+                    {[...reorderedFrozenColumns, ...reorderedNonFrozenColumns].map((col) => (
                       <td
                         key={col.ColumnHeader}
                         className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}
                         style={{
                           textAlign: col.Alignment,
                           minWidth: `${col.Width}px`,
-                          fontSize: settings.fontSize ? `${settings.fontSize - 1}px` : '12px',
-                          fontFamily: settings.fontFamily || 'system-ui',
-                          borderRight: '1px solid #ccc',
-                          position: col.isFreeze ? 'sticky' : 'static',
-                          left: col.isFreeze ? `${calculateLeftOffset(col)}px` : undefined,
-                          background: col.isFreeze ? (settings.freezebackground || 'whitesmoke') : 'transparent',
+                          fontSize: settings.fontSize ? `${settings.fontSize - 1}px` : "12px",
+                          fontFamily: settings.fontFamily || "system-ui",
+                          borderRight: "1px solid #ccc",
+                          position: col.isFreeze ? "sticky" : "static",
+                          left: col.isFreeze
+                            ? `${calculateLeftOffset(col) ?? reorderedFrozenColumns
+                              .slice(0, reorderedFrozenColumns.findIndex((c) => c.ColumnHeader === col.ColumnHeader))
+                              .reduce((acc, curr) => acc + curr.Width + 8, 0)}px`
+                            : undefined,
+                          background: col.isFreeze ? settings.freezebackground || "whitesmoke" : "transparent",
                           zIndex: col.isFreeze ? 100 : 1,
                         }}
                         onDoubleClick={() => col.isEditable && handleDoubleClick(row.id, col.ColumnHeader)}
                       >
-                      
                         {editCell?.rowId === row.id && editCell?.ColumnHeader === col.ColumnHeader ? (
                           col.DataType === 'string' ? (
-                            <input type="text" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
+                            <input type="text" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
                           ) : col.DataType === 'number' ? (
-                            <input type="number" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
+                            <input type="number" defaultValue={row[col.ColumnHeader]} className="editable-input" onBlur={(e) => handleEditableInput(col.ColumnHeader, e.target.value)} onKeyDown={(e: any) => e.key === "Enter" && handleEditableInput(col.ColumnHeader, e.target.value)} />
                           ) : col.DataType === 'date' ? (
                             <input type="date"
                               defaultValue={(() => {
@@ -1312,24 +1343,27 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                                 return isNaN(year) || isNaN(Number(month)) || isNaN(Number(day)) ? "" :
                                   `${year}-${month}-${day}`;
                               })()}
-                              className="editable-input" onBlur={(e) => {
-                                let [year, month, day] = e.target.value.split("-").map(Number);
+                              className="editable-input"
+                              onBlur={(e) => {
+                                let [year, month, day] = e.target.value.split("-").map((num) => parseInt(num, 10));
+
                                 if (isNaN(year) || isNaN(month) || isNaN(day)) return;
 
-                                month = String(month).padStart(2, "0");
-                                day = String(day).padStart(2, "0");
+                                let formattedMonth = String(month).padStart(2, "0");
+                                let formattedDay = String(day).padStart(2, "0");
 
                                 let formattedDate =
-                                  settings?.dateFormat === "DD-MM-YYYY" ? `${day}-${month}-${year}` :
-                                    settings?.dateFormat === "DD/MM/YYYY" ? `${day}/${month}/${year}` :
-                                      settings?.dateFormat === "MM-DD-YYYY" ? `${month}-${day}-${year}` :
-                                        settings?.dateFormat === "MM/DD/YYYY" ? `${month}/${day}/${year}` :
-                                          settings?.dateFormat === "YYYY/MM/DD" ? `${year}/${month}/${day}` :
+                                  settings?.dateFormat === "DD-MM-YYYY" ? `${formattedDay}-${formattedMonth}-${year}` :
+                                    settings?.dateFormat === "DD/MM/YYYY" ? `${formattedDay}/${formattedMonth}/${year}` :
+                                      settings?.dateFormat === "MM-DD-YYYY" ? `${formattedMonth}-${formattedDay}-${year}` :
+                                        settings?.dateFormat === "MM/DD/YYYY" ? `${formattedMonth}/${formattedDay}/${year}` :
+                                          settings?.dateFormat === "YYYY/MM/DD" ? `${year}/${formattedMonth}/${formattedDay}` :
                                             e.target.value; // Default: YYYY-MM-DD
 
                                 handleEditableInput(col.ColumnHeader, formattedDate);
                               }}
-                              onKeyDown={(e) => e.key === "Enter" && e.target.blur()} />
+
+                              onKeyDown={(e: any) => e.key === "Enter" && e.target.blur()} />
                           ) : col.DataType === 'boolean' ? (
                             <input type="checkbox" checked={row[col.ColumnHeader]} onChange={(e) => handleEditableInput(col.ColumnHeader, e.target.checked)} />
                           ) : null
@@ -1342,6 +1376,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 ))}
               </tbody>
             </table>
+
           </div>
           <div className="pagination-container">
             <div className="footer">
@@ -1364,19 +1399,19 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
               </label>
 
               <button disabled={currentPage === 1} onClick={() => handlePageChange(1)}>
-                <BiFirstPage />
+                <ChevronFirst />
               </button>
               <button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
-                <TiArrowLeftThick />
+                <ChevronLeft />
               </button>
 
               <span>Page {currentPage} - {totalPages}</span>
 
               <button disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
-                <TiArrowRightThick />
+                <ChevronRight />
               </button>
               <button disabled={currentPage === totalPages} onClick={() => handlePageChange(totalPages)}>
-                <BiLastPage />
+                <ChevronLast />
               </button>
 
             </div>
