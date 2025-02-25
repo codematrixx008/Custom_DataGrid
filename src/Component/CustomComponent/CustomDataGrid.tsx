@@ -1287,8 +1287,8 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                 {paginatedData.map((row, rowIndex) => (
                   <tr key={row.id} className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}>
                     <td
-                      className="sticky-column"
-                      style={{ position: "sticky", left: 0, background: settings.background || "whitesmoke", zIndex: 120 }}
+                      className={rowIndex % 2 === 0 ? "stripedRow sticky-column" : "table-row sticky-column"}
+                      style={{ position: "sticky", left: 0, zIndex: 120 }}
                     >
                       <input
                         type="checkbox"
