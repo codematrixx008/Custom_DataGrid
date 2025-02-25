@@ -39,7 +39,7 @@
     border-radius: 3px;
 }
 
-::-webkit-scrollbar-track {
+.grid-main-container .table-main-container .table-main-box::-webkit-scrollbar-track {
     background: #f1f1f1;
     margin-top: 29px !important;
 }
@@ -138,9 +138,9 @@
 .column-visibility-container {
     position: absolute;
     top: 33px;
-    left: -210%;
+    left: -80   px;
     transform: translateX(-50%);
-    padding: 5px 10px 10px 5px;
+    padding: 10px;
     background-color: #fbfbfb;
     color: #313131;
     border-radius: 3px;
@@ -207,14 +207,14 @@
 .inner-column-visibility {
     max-height: 255px;
     text-align: left;
-    padding: 5px;
+    /* padding: 5px; */
     overflow-y: scroll;
 }
 
 .inner-column-visibility .checkbox-container {
     display: flex;
     align-items: center;
-    justify-content: start;
+    justify-content: space-between;
     padding: 2px 4px;
     font-size: 13px;
 }
