@@ -1198,6 +1198,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                       type="checkbox"
                       checked={isSelectAllChecked}
                       onChange={handleSelectAllChange}
+                      style={{ background: settings.background }}
                     />
                   </th>
                   {[...reorderedFrozenColumns, ...reorderedNonFrozenColumns].map((col, index) => (
@@ -1288,7 +1289,7 @@ const CustomDataGrid = ({ title, settings, listViewColumns, data }: any) => {
                   <tr key={row.id} className={rowIndex % 2 === 0 ? "stripedRow" : "table-row"}>
                     <td
                       className={rowIndex % 2 === 0 ? "stripedRow sticky-column" : "table-row sticky-column"}
-                      style={{ position: "sticky", left: 0, zIndex: 120 }}
+                      style={{ position: "sticky", left: 0, zIndex: 104 }}
                     >
                       <input
                         type="checkbox"
